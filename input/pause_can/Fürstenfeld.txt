@@ -1,0 +1,82 @@
+[Title]Fürstenfeld
+
+[Composer]STS
+
+[Intro]
+{G}Langsam find't der {D}Tag sei End 
+{C}und die Nacht be{G}ginnt
+{Em}In der Kärtnerstrass'n {Bm}do singt aner 
+{C}"Blowing in the {D}wind"
+{G}Hat a greanes {D}Röckerl an, 
+{C}steht da ganz ver{G}lorn
+{Em}Und der Steffl der schaut {Bm}owi auf den 
+{C}oarmen {D}Steirer-{G}buam
+
+Der hat woll'n sei Glück probiern 
+in der grossen fremden Stadt
+Hat glaubt sei Musik bringt eam aufs 
+Rennbahnexpress-Titelblatt
+Aus der Traum zerplatzt wia 
+Seifenblosn nix is blieb'n
+Ois wia a paar Schilling in 
+seim Gitarrenkoffer drin
+
+[Interlude]
+{G}
+
+[Verse 1]
+{D}{}Wochenl-{C}ang steh i scho {D}do
+Wochenlang plog i mi o
+I spü mia die Finger wund
+{C}{}Und sing sog{D}or Do kummt die {G}Sunn
+
+Doch es is zum narrisch wern
+Kaner will mi singen hearn
+Langsam kriag i wirklich gnua
+I frog mi wos i do dua
+
+{D} Da geht den {C}ganzen Tag der {G}Wind
+{C/G}{G}{D}
+Nix ois {C}Baustelln das ka {G}Mensch wos find
+{C/G}{G}
+{D} Die Buren{C}häut'ln san ein {G}Graus
+{C/G}{G}{D}
+Und im Ka-{D}ffeehaus brennst di {G}aus
+
+[Chorus]
+{D} I wü wieder {G}ham, {D} fühl mi do so al-{G}lan
+{D} I brauch ka grosse {G}Welt, {C}{}i will {D}ham nach Fürsten-{G}feld
+
+[Verse 2]
+In der Zeitung da ham'S gschriem
+Da gibts a Szene do muasst hin
+Was die wolln des soin die schreim
+Mia ka de Szene g'stoin bleim
+
+Da geh i gestern ins U4
+Fangt a Diandl a zum redn mit mir
+Schwoarze Lipp'n grüne Hoar
+Do kannst ja Angst kriang wirklich woahr
+
+[Chorus]
+
+[Interlude]
+{D}{C}{G}
+{D}{C}{G}
+{D}{C}{G}
+{C}{D}{G}
+
+[Verse 3]
+Niemals spiel i mehr in Wien
+Wien hat mi gor ned verdient
+I spiel höchstens no in Graz
+Sinabelkirchen und Stinatz
+I brauch kan Gürtel i brauch kan Ring
+I will z'ruck hintern Semmering
+I brauch nur des bissl Göid
+Für die Fahrt nach Fürstenfeld
+
+[Chorus 2x]
+
+[Outro]
+{D}{G}

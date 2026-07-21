@@ -1,0 +1,67 @@
+\documentclass{article}
+\usepackage{xcolor}
+\usepackage{tgbonum}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{musixtex}
+\usepackage{wasysym}
+
+\definecolor{titleColor}{HTML}{ae2012}
+\definecolor{composerColor}{HTML}{001219}
+
+\definecolor{chordColor}{HTML}{9b2226}
+\definecolor{textColor}{HTML}{000000}
+\definecolor{commentColor}{HTML}{ee9b00}
+\definecolor{repColor}{HTML}{bb3e03}
+
+\newcommand{\songtitle}[1]{{\LARGE\bfseries\color{titleColor}#1\\[-0.75em]}}
+\newcommand{\composer}[1]{\hspace{1.35em}\small\color{composerColor}#1\\[-0.75em]}
+
+\newcommand{\ch}[1]{{\bfseries\color{chordColor}#1}}
+\newcommand{\tx}[1]{\color{textColor}#1}
+\newcommand{\com}[1]{\small\color{commentColor}#1}
+\newcommand{\rep}[1]{\color{repColor}[#1]}
+
+\renewcommand{\contentsname}{Inhalt}
+\titleformat{\section}{\normalfont\Large\bfseries}{}{2em}{}
+\titlespacing{\section}{-10pt}{0pt}{0pt}
+
+\newlength{\maxtitle}
+\setlength{\maxtitle}{0pt}
+\newlength{\maxcomponist}
+\setlength{\maxcomponist}{0pt}
+
+\edef\finaltitle{\the\dimexpr 0.35\textwidth}% will be replaced during \begin{document}
+\edef\finalcomponist{\the\dimexpr 0.35\textwidth}
+
+\newcommand{\mysection}[2]{% #1=title, #2=composer
+\bgroup% measure widths
+  \sbox0{#1}%
+  \ifdim\wd0>\maxtitle\relax \global\maxtitle=\wd0 \fi
+  \sbox1{#2}%
+  \ifdim\wd1>\maxcomponist\relax \global\maxcomponist=\wd1 \fi
+  \def\shorttitle{\string\makebox[\string\finaltitle][l]{#1}\string\hfill
+    \string\makebox[\string\finalcomponist][l]{#2}\string\hfill}
+  \section[\shorttitle]{\songtitle{#1}}%
+\egroup}
+
+\makeatletter
+\AtEndDocument{%
+  \immediate\write\@auxout{\string\gdef\string\finaltitle{\the\maxtitle}}%
+  \immediate\write\@auxout{\string\gdef\string\finalcomponist{\the\maxcomponist}}%
+}
+\makeatother
+
+\geometry{
+  left=2.5cm,
+  right=3cm,
+  top=2cm,
+  bottom=2cm, 
+}
+
+\begin{document}
+%OPTIONAL_TABLE_OF_CONTENT
+
+\newpage
+
+\end{document}

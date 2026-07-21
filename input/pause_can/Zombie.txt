@@ -1,0 +1,51 @@
+[Title]Zombie
+
+[Composer]The Cranbarries
+
+[Intro 4x]
+{Em}{C}{G}{D/F#}
+
+[Verse 1]
+{Em}Another {C}head hangs lowly
+{G}Child is slowly {D/F#}taken
+{Em}And the {C}violence caused such silence
+{G}Who are we {D/F#}mistaken?
+But you {Em}see, it's not me
+It's not {C}my family
+In your {G}head, in your head, they are {D/F#}fighting
+With their {Em}tanks and their bombs
+And their {C}bombs and their guns
+In your {G}head, in your head, they are {D/F#}crying
+
+[Chorus]
+In your {Em}head, in your {C}head
+Zombie, {G}zombie, zombie-{D/F#}ie-ie
+What's in {Em}your head, in your {C}head?
+Zombie, zombie, {G}zombie-ie-{D/F#}ie-ie, oh
+
+[Instrumental + "do do..."]
+{Em}{C}{G}{D/F}{x2}
+
+[Verse 2]
+Another mother's breaking
+Heart is taking over
+When the violence causes silence
+We must be mistaken
+It's the same old theme
+Since nineteen-sixteen
+In your head, in your head, they're still fighting
+With their tanks and their bombs
+And their bombs and their guns
+
+[Chorus]
+
+[Instrumental + "do do..."]
+{Em}{C}{G}{D/F}{x2}
+{Em}{C}{Em}{C}{x2}
+
+[Solo]
+{Em}{C}{G}{D/F#}{x3}
+
+[Outro]
+{Em}{C}{Em}{C}
+{Em}{C}{Em}
