@@ -1,14 +1,53 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 
+\usepackage{xcolor}
+
+\definecolor{chordcolor}{HTML}{2E86AB}
+\definecolor{lyriccolor}{HTML}{1A1A1A}
+\definecolor{titlecolor}{HTML}{8A8A8A}
+
+\setlength{\parskip}{1.5em}
+\setlength{\parindent}{0pt}
+
+% Akkord-Text-Box: Akkord über der Silbe/dem Wort
 \newcommand{\cw}[2]{%
   \begin{tabular}[t]{@{}l@{}}%
-    \textit{#1}\\%
-    #2%
+    \color{chordcolor}\small\bfseries #1\\[2pt]%
+    \color{lyriccolor}\normalsize\mdseries #2%
   \end{tabular}%
 }
 
+% Dezentes Strophenlabel (z.B. "Refrain", "Strophe 1")
+\newcommand{\paragraphtitle}[1]{%
+  \noindent{\color{titlecolor}\footnotesize\mdseries\scshape #1}\\[0.3em]%
+}
+
+% Kopfzeile: ein Befehl pro Metadaten-Kategorie (\metaTitle, \metaArtist, ...)
+\definecolor{metaTitlecolor}{HTML}{1A1A1A}
+\newcommand{\metaTitle}[1]{\noindent{\color{metaTitlecolor}\large\bfseries\upshape #1}\\}
+
+\definecolor{metaArtistcolor}{HTML}{6B6B6B}
+\newcommand{\metaArtist}[1]{\noindent{\color{metaArtistcolor}\small\mdseries\itshape #1}\\}
+
+\definecolor{metaSubtitlecolor}{HTML}{8A8A8A}
+\newcommand{\metaSubtitle}[1]{\noindent{\color{metaSubtitlecolor}\footnotesize\mdseries\itshape #1}\\}
+
+\definecolor{metaInstructioncolor}{HTML}{8A8A8A}
+\newcommand{\metaInstruction}[1]{\noindent{\color{metaInstructioncolor}\footnotesize\mdseries\scshape #1}\\}
+
 \begin{document}
-\noindent \cw{}{Be-}\cw{{Fm}}{fore} \cw{}{I} \cw{}{for-}\cw{{C}}{get} \cw{{A}}{} \cw{{B}}{} \cw{{C}}{I} \cw{}{will} \cw{{Fm}}{remember}\\
+\metaTitle{My Title}
+\metaArtist{Simon And Garfunkel}
+\metaInstruction{play how you like}
+
+\paragraphtitle{Bapenada}
+\noindent \cw{}{Be-}\cw{Fm}{fore} \cw{}{I} \cw{}{for-}\cw{C}{get} \cw{A}{} \cw{B}{} \cw{C}{I}\cw{Cm}{}\\
+\noindent \cw{}{will} \cw{}{remember} \cw{A}{to} \cw{B}{find} \cw{}{you}\\
+
+
+\paragraphtitle{Bapenada2}
+\noindent \cw{}{Be-}\cw{Fm}{fore} \cw{}{I} \cw{}{for-}\cw{C7}{get} \cw{A}{} \cw{B}{} \cw{C}{I}\cw{Cm}{}\\
+\noindent \cw{}{will} \cw{}{remember} \cw{A}{to} \cw{B}{find} \cw{}{you}\\
 
 \end{document}

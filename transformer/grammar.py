@@ -1,36 +1,31 @@
 from lark import Lark, ParseTree
 
 grammar = r"""
-line            :   word (" "+ word)*
-word            :   (mid_chord | pre_chord | post_chord | plain_chord | plain_text)
+page            :   title_section? LINEBREAK + paragraph (PARAGRAPH_BREAK paragraph)+
 
-mid_chord       :   TEXTTOKEN CHORDTOKEN TEXTTOKEN
+title_section       :   "[" LINEBREAK? meta_token (LINEBREAK meta_token)* LINEBREAK? "]"
+meta_token      :   (meta_category ":" " "* TEXT_LINE)
+meta_category   :   META_CATEGORY_KEYWORD
+META_CATEGORY_KEYWORD  :   "Title" | "Artist" | "Subtitle" | "Instruction"
 
-pre_chord       :   CHORDTOKEN TEXTTOKEN
-post_chord      :   TEXTTOKEN CHORDTOKEN
+paragraph       :   (PARAGRAPH_TITLE? LINEBREAK) line (LINEBREAK line)*
+line            :   word (SPACE+ word)*
+word            :   TEXTTOKEN chord_run*
+                |   chord_run+
 
-plain_chord     :   CHORDTOKEN
-plain_text      :   TEXTTOKEN
-
-CHORDTOKEN      :   "{" TEXTTOKEN "}"
-TEXTTOKEN       :   /[a-zA-ZäöüÄÖÜß\!?'\-]+/
-"""
-
-grammar2 = r"""
-line            :   word (" "+ word)*
-word            :   
-
-chord_box       :   
-
-plain_chord     :   CHORDTOKEN
-plain_text      :   TEXTTOKEN
+chord_run       :   CHORDTOKEN TEXTTOKEN?
 
 CHORDTOKEN      :   "{" TEXTTOKEN "}"
-TEXTTOKEN       :   /[a-zA-ZäöüÄÖÜß\!?'\-]+/
+PARAGRAPH_TITLE :   "[" TEXT_LINE "]"
+TEXT_LINE       :   TEXTTOKEN (SPACE+ TEXTTOKEN)*
+TEXTTOKEN       :   /[a-zA-Z0-9äöüÄÖÜß\!?'\-]+/
+SPACE           :   " "
+LINEBREAK       :   "\n"
+PARAGRAPH_BREAK :   "\n\n"
 """
 
 def cst(input: str)->ParseTree:
-    parser = Lark(grammar, start="line")
+    parser = Lark(grammar, start="page")
     tree = parser.parse(input)
     print(tree.pretty())
     return tree
