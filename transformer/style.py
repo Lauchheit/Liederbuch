@@ -85,6 +85,17 @@ class Style:
     # Kopfzeile (Title/Artist/Subtitle/Instruction, siehe MetaStyle)
     meta_styles: dict[MetaCategory, MetaStyle] = field(default_factory=default_meta_styles)
 
+    # Layout
+    columns: int = 2
+    column_sep: str = "1.8em"
+    column_rule_width: str = "0pt"
+
+    # Seitenränder
+    margin_left: str = "2.2cm"
+    margin_right: str = "1.2cm"
+    margin_top: str = "1.2cm"
+    margin_bottom: str = "2.5cm"
+
     def __post_init__(self):
         for field_name in ("chord_size", "lyric_size", "title_size"):
             value = getattr(self, field_name)
@@ -93,6 +104,8 @@ class Style:
                     f"{field_name}={value!r} ist keine gültige LaTeX-Größe. "
                     f"Erlaubt: {', '.join(FONT_SIZES)}"
                 )
+        if self.columns < 1:
+            raise ValueError(f"columns={self.columns!r} muss mindestens 1 sein.")
 
     def to_latex_preamble(self) -> str:
         chord_weight = r"\bfseries" if self.chord_bold else r"\mdseries"
@@ -105,7 +118,11 @@ class Style:
         else:
             title_shape = r"\upshape"
 
+        lyric_style = rf"\color{{lyriccolor}}\{self.lyric_size}{lyric_weight}"
+
         return rf"""\usepackage{{xcolor}}
+\usepackage{{multicol}}
+\usepackage[left={self.margin_left},right={self.margin_right},top={self.margin_top},bottom={self.margin_bottom}]{{geometry}}
 
 \definecolor{{chordcolor}}{{HTML}}{{{self.chord_color}}}
 \definecolor{{lyriccolor}}{{HTML}}{{{self.lyric_color}}}
@@ -113,13 +130,20 @@ class Style:
 
 \setlength{{\parskip}}{{{self.paragraph_skip}}}
 \setlength{{\parindent}}{{0pt}}
+\setlength{{\columnsep}}{{{self.column_sep}}}
+\setlength{{\columnseprule}}{{{self.column_rule_width}}}
 
 % Akkord-Text-Box: Akkord über der Silbe/dem Wort
 \newcommand{{\cw}}[2]{{%
   \begin{{tabular}}[t]{{@{{}}l@{{}}}}%
     \color{{chordcolor}}\{self.chord_size}{chord_weight} #1\\[{self.chord_lyric_gap}]%
-    \color{{lyriccolor}}\{self.lyric_size}{lyric_weight} #2%
+    {lyric_style} #2%
   \end{{tabular}}%
+}}
+
+% Akkordlose Zeile: reiner Fließtext ohne Akkordzeile, spart die dafür reservierte Höhe
+\newcommand{{\lyricline}}[1]{{%
+  {lyric_style} #1%
 }}
 
 % Dezentes Strophenlabel (z.B. "Refrain", "Strophe 1")

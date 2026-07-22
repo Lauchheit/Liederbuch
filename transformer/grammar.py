@@ -3,8 +3,8 @@ from lark import Lark, ParseTree
 grammar = r"""
 page            :   title_section? LINEBREAK + paragraph (PARAGRAPH_BREAK paragraph)+
 
-title_section       :   "[" LINEBREAK? meta_token (LINEBREAK meta_token)* LINEBREAK? "]"
-meta_token      :   (meta_category ":" " "* TEXT_LINE)
+title_section       :   "[" LINEBREAK? SPACE* meta_token (LINEBREAK SPACE* meta_token)* LINEBREAK? "]"
+meta_token      :   (meta_category ":" SPACE* TEXT_LINE)
 meta_category   :   META_CATEGORY_KEYWORD
 META_CATEGORY_KEYWORD  :   "Title" | "Artist" | "Subtitle" | "Instruction"
 
@@ -18,10 +18,10 @@ chord_run       :   CHORDTOKEN TEXTTOKEN?
 CHORDTOKEN      :   "{" TEXTTOKEN "}"
 PARAGRAPH_TITLE :   "[" TEXT_LINE "]"
 TEXT_LINE       :   TEXTTOKEN (SPACE+ TEXTTOKEN)*
-TEXTTOKEN       :   /[a-zA-Z0-9äöüÄÖÜß\!?'\-]+/
-SPACE           :   " "
+TEXTTOKEN       :   /[a-zA-Z0-9äöüÄÖÜß\!?,:.\"\/\+\-'\-]+/
+SPACE           :   " " | "\t"
+PARAGRAPH_BREAK :   LINEBREAK LINEBREAK+
 LINEBREAK       :   "\n"
-PARAGRAPH_BREAK :   "\n\n"
 """
 
 def cst(input: str)->ParseTree:

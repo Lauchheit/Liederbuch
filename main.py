@@ -11,10 +11,10 @@ with open("input.corda", "r") as f:
 cst = grammar.cst(input)
 ast = CordaTransformer().transform(cst)
 
-renderer: LaTeXRenderer = LaTeXRenderer()
-rendered = renderer.render(ast)
-
 style = Style()
+
+renderer: LaTeXRenderer = LaTeXRenderer(columns=style.columns)
+rendered = renderer.render(ast)
 
 with open("latex/preambel.tex", 'r') as f_pre:
     pre = f_pre.read()

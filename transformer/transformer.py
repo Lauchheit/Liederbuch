@@ -11,6 +11,10 @@ class Word:
 class Line:
     tokens: list
 
+    @property
+    def has_chords(self) -> bool:
+        return any(chord for word in self.tokens for chord, _ in word.boxes)
+
 @dataclass
 class Paragraph:
     title: str
@@ -67,7 +71,7 @@ class CordaTransformer(Transformer):
         return Word(boxes=boxes)
 
     def line(self, items):
-        return Line(tokens=items)
+        return Line(tokens=[item for item in items if isinstance(item, Word)])
 
     def paragraph(self, items):
         title = (items[0])[1:-1] if isinstance(items[0], str) else ""
@@ -78,7 +82,7 @@ class CordaTransformer(Transformer):
         return MetaCategory[str(items[0]).lower()]
 
     def meta_token(self, items):
-        category, text = items
+        category, text = items[0], items[-1]
         return MetaInfo(category=category, text=str(text).strip())
 
     def title_section(self, items):

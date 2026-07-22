@@ -2,6 +2,8 @@
 \usepackage[utf8]{inputenc}
 
 \usepackage{xcolor}
+\usepackage{multicol}
+\usepackage[left=2.2cm,right=1.2cm,top=1.2cm,bottom=2.5cm]{geometry}
 
 \definecolor{chordcolor}{HTML}{2E86AB}
 \definecolor{lyriccolor}{HTML}{1A1A1A}
@@ -9,6 +11,8 @@
 
 \setlength{\parskip}{1.5em}
 \setlength{\parindent}{0pt}
+\setlength{\columnsep}{1.8em}
+\setlength{\columnseprule}{0pt}
 
 % Akkord-Text-Box: Akkord über der Silbe/dem Wort
 \newcommand{\cw}[2]{%
@@ -16,6 +20,11 @@
     \color{chordcolor}\small\bfseries #1\\[2pt]%
     \color{lyriccolor}\normalsize\mdseries #2%
   \end{tabular}%
+}
+
+% Akkordlose Zeile: reiner Fließtext ohne Akkordzeile, spart die dafür reservierte Höhe
+\newcommand{\lyricline}[1]{%
+  \color{lyriccolor}\normalsize\mdseries #1%
 }
 
 % Dezentes Strophenlabel (z.B. "Refrain", "Strophe 1")
@@ -37,17 +46,72 @@
 \newcommand{\metaInstruction}[1]{\noindent{\color{metaInstructioncolor}\footnotesize\mdseries\scshape #1}\\}
 
 \begin{document}
-\metaTitle{My Title}
-\metaArtist{Simon And Garfunkel}
-\metaInstruction{play how you like}
+\metaTitle{As The World Caves In}
+\metaArtist{Matt Maltese}
 
-\paragraphtitle{Bapenada}
-\noindent \cw{}{Be-}\cw{Fm}{fore} \cw{}{I} \cw{}{for-}\cw{C}{get} \cw{A}{} \cw{B}{} \cw{C}{I}\cw{Cm}{}\\
-\noindent \cw{}{will} \cw{}{remember} \cw{A}{to} \cw{B}{find} \cw{}{you}\\
+\begin{multicols}{2}
+\begin{minipage}{\linewidth}
+\paragraphtitle{Verse 1}
+\noindent \cw{}{My} \cw{B}{feet} \cw{}{are} \cw{}{aching}\\
+\noindent \cw{}{And} \cw{}{your} \cw{Eb}{back} \cw{}{is} \cw{}{pretty} \cw{}{tired}\\
+\noindent \cw{}{And} \cw{}{we've} \cw{Bb}{drunk} \cw{}{a} \cw{}{couple} \cw{}{bottles,} \cw{}{babe}\\
+\noindent \cw{}{And} \cw{Eb6}{set} \cw{}{our} \cw{}{grief} \cw{}{aside}\\
+\noindent \cw{}{The} \cw{Bb}{papers} \cw{}{say} \cw{}{it's} \cw{}{doomsday}\\
+\noindent \cw{}{The} \cw{Eb}{button} \cw{}{has} \cw{}{been} \cw{}{pressed}\\
+\noindent \cw{}{We're} \cw{}{gonna} \cw{Bb}{nuke} \cw{}{each} \cw{}{other} \cw{}{up,} \cw{}{boys}\\
+\noindent \cw{}{'Til} \cw{}{old} \cw{Eb7}{Satan} \cw{Eb6}{stands} \cw{}{impressed}\\
+\end{minipage}
 
 
-\paragraphtitle{Bapenada2}
-\noindent \cw{}{Be-}\cw{Fm}{fore} \cw{}{I} \cw{}{for-}\cw{C7}{get} \cw{A}{} \cw{B}{} \cw{C}{I}\cw{Cm}{}\\
-\noindent \cw{}{will} \cw{}{remember} \cw{A}{to} \cw{B}{find} \cw{}{you}\\
+\begin{minipage}{\linewidth}
+\paragraphtitle{Pre-Chorus}
+\noindent \cw{Cm}{} \cw{}{And} \cw{}{here} \cw{}{it} \cw{}{is,} \cw{}{our} \cw{D7}{final} \cw{}{night} \cw{}{alive}\\
+\noindent \cw{}{And} \cw{}{as} \cw{}{the} \cw{Gm}{earth} \cw{}{burns} \cw{Gb+}{to} \cw{}{the} \cw{Gm/F}{ground}\\
+\noindent \cw{}{Oh,} \cw{Em7b5}{girl,} \cw{}{it's}\\
+\end{minipage}
 
+
+\begin{minipage}{\linewidth}
+\paragraphtitle{Chorus}
+\noindent \cw{Eb7}{you} \cw{}{that} \cw{}{I} \cw{Ebm6}{lie} \cw{}{with}\\
+\noindent \cw{}{As} \cw{}{the} \cw{B}{atom} \cw{}{bomb} \cw{D7}{locks} \cw{}{in}\\
+\noindent \cw{}{Oh,} \cw{}{it's} \cw{Eb7}{you} \cw{}{I} \cw{}{watch} \cw{}{T-}\cw{Ebm6}{V} \cw{}{with}\\
+\noindent \cw{}{As} \cw{}{the} \cw{B}{world,} \cw{}{as} \cw{}{the} \cw{D7}{world} \cw{}{caves} \cw{Eb}{in}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\paragraphtitle{Verse 2}
+\noindent \lyricline{You put your final suit on}\\
+\noindent \lyricline{I paint my fingernails}\\
+\noindent \lyricline{Oh, we're going out in style, babe}\\
+\noindent \lyricline{And everything's on sale}\\
+\noindent \lyricline{We creep up on extinction}\\
+\noindent \lyricline{I pull your arms right in}\\
+\noindent \lyricline{I weep and say, "Goodnight, love"}\\
+\noindent \lyricline{While my organs pack it in}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\paragraphtitle{Pre-Chorus}
+\noindent \cw{Cm}{} \cw{}{And} \cw{}{here} \cw{}{it} \cw{}{is,} \cw{}{our} \cw{D7}{final} \cw{}{night} \cw{}{alive}\\
+\noindent \cw{}{And} \cw{}{as} \cw{}{the} \cw{Gm}{earth} \cw{}{burns} \cw{Gb+}{to} \cw{}{the} \cw{Gm/F}{ground}\\
+\noindent \cw{}{Oh,} \cw{Em7b5}{girl,} \cw{}{it's}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\paragraphtitle{Chorus}
+\noindent \cw{Eb7}{you} \cw{}{that} \cw{}{I} \cw{Ebm6}{lie} \cw{}{with}\\
+\noindent \cw{}{As} \cw{}{the} \cw{B}{atom} \cw{}{bomb} \cw{D7}{locks} \cw{}{in}\\
+\noindent \cw{}{Oh,} \cw{}{it's} \cw{Eb7}{you} \cw{}{I} \cw{}{watch} \cw{}{T-}\cw{Ebm6}{V} \cw{}{with}\\
+\noindent \cw{}{As} \cw{}{the} \cw{B}{world,} \cw{}{as} \cw{}{the} \cw{D7}{world} \cw{}{caves}\\
+\noindent \cw{}{Oh} \cw{}{its} \cw{Eb7}{you} \cw{}{that} \cw{}{I} \cw{Ebm6}{lie} \cw{}{with}\\
+\noindent \cw{}{As} \cw{}{the} \cw{B}{atom} \cw{}{bomb} \cw{D7}{locks} \cw{}{in}\\
+\noindent \cw{}{Yes,} \cw{}{it's} \cw{Eb7}{you} \cw{}{I} \cw{}{welcome} \cw{Ebm6}{death} \cw{}{with}\\
+\noindent \cw{}{As} \cw{}{the} \cw{B}{world,} \cw{}{as} \cw{}{the} \cw{D7}{world} \cw{}{caves} \cw{}{in}\\
+\end{minipage}
+
+\end{multicols}
 \end{document}
