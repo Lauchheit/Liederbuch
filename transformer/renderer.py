@@ -1,8 +1,21 @@
 import transformer.transformer as transformer
 
+PREAMBLE_PATH = "latex/preambel.tex"
+END_PATH = "latex/end.tex"
+
 class LaTeXRenderer:
-    def __init__(self, columns: int = 1):
-        self.columns = columns
+    def __init__(self, style):
+        self.style = style
+        self.columns = style.columns
+
+    def render_document(self, node) -> str:
+        with open(PREAMBLE_PATH, "r") as f_pre:
+            pre = f_pre.read()
+        with open(END_PATH, "r") as f_end:
+            end = f_end.read()
+
+        body = self.render(node)
+        return f"{pre}\n{self.style.to_latex_preamble()}\n\\begin{{document}}\n{body}\n{end}"
 
     def render(self, node):
         if isinstance(node, transformer.Paragraph):
@@ -37,6 +50,9 @@ class LaTeXRenderer:
         elif isinstance(node, transformer.MetaInfo):
             macro = transformer.meta_macro_name(node.category)
             return f"\\{macro}{{{node.text}}}\n"
+
+        elif isinstance(node, transformer.Book):
+            return "\n\\newpage\n".join(self.render(page) for page in node.pages)
 
         else:
             raise ValueError(f"Unbekannter Node-Typ: {type(node)}")

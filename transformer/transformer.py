@@ -44,7 +44,9 @@ class Page:
     title_section: TitleSection | None
     paragraphs: list[Paragraph]
 
-
+@dataclass
+class Book:
+    pages: list[Page]
 
 # Transformer: CST → AST
 class CordaTransformer(Transformer):
@@ -93,5 +95,9 @@ class CordaTransformer(Transformer):
         title_section: TitleSection | None = items[0] if items and isinstance(items[0], TitleSection) else None
         paragraphs = [item for item in items if isinstance(item, Paragraph)]
         return Page(title_section=title_section, paragraphs=paragraphs)
+
+    def book(self,items):
+        pages = [item for item in items if isinstance(item, Page)]
+        return Book(pages=pages)
     
 

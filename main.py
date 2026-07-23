@@ -6,22 +6,16 @@ from pprint import pprint
 from transformer.renderer import LaTeXRenderer
 from transformer.style import Style
 
-with open("input.corda", "r") as f:
+with open("input/input.corda", "r") as f:
     input = f.read()
+
 cst = grammar.cst(input)
 ast = CordaTransformer().transform(cst)
 
 style = Style()
 
-renderer: LaTeXRenderer = LaTeXRenderer(columns=style.columns)
-rendered = renderer.render(ast)
-
-with open("latex/preambel.tex", 'r') as f_pre:
-    pre = f_pre.read()
-with open("latex/end.tex") as f_end:
-    end = f_end.read()
-
-output = f"{pre}\n{style.to_latex_preamble()}\n\\begin{{document}}\n{rendered}\n{end}"
+renderer: LaTeXRenderer = LaTeXRenderer(style)
+output = renderer.render_document(ast)
 
 with open("output.tex", 'w') as f_out:
     f_out.write(output)
