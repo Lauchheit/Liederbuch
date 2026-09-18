@@ -5,6 +5,14 @@
 \usepackage{multicol}
 \usepackage[left=2.2cm,right=1.2cm,top=1.2cm,bottom=2.5cm]{geometry}
 
+% Verhindert Underfull-\hbox-Warnungen an der Wurzel: die \cw-Tabular-Boxen sind
+% praktisch ungedehnbar (einzelne Wörter in fester Spalte), Blocksatz kann eine Zeile
+% damit oft nicht auf volle Spaltenbreite strecken. Songtext-Zeilen sollen ohnehin
+% linksbündig statt im Blocksatz stehen, das behebt die Ursache statt nur das Symptom.
+\raggedright
+\hbadness=10000
+\vbadness=10000
+
 \definecolor{chordcolor}{HTML}{2E86AB}
 \definecolor{lyriccolor}{HTML}{1A1A1A}
 \definecolor{titlecolor}{HTML}{8A8A8A}
@@ -14,7 +22,7 @@
 \setlength{\columnsep}{1.8em}
 \setlength{\columnseprule}{0pt}
 
-% Akkord-Text-Box: Akkord �ber der Silbe/dem Wort
+% Akkord-Text-Box: Akkord über der Silbe/dem Wort
 \newcommand{\cw}[2]{%
   \begin{tabular}[t]{@{}l@{}}%
     \color{chordcolor}\small\bfseries #1\\[2pt]%
@@ -22,7 +30,7 @@
   \end{tabular}%
 }
 
-% Akkordlose Zeile: reiner Flie�text ohne Akkordzeile, spart die daf�r reservierte H�he
+% Akkordlose Zeile: reiner Fließtext ohne Akkordzeile, spart die dafür reservierte Höhe
 \newcommand{\lyricline}[1]{%
   \color{lyriccolor}\normalsize\mdseries #1%
 }
@@ -51,6 +59,7 @@
 
 \begin{multicols}{2}
 \begin{minipage}{\linewidth}
+\raggedright
 \paragraphtitle{Verse 1}
 \noindent \cw{}{My} \cw{B}{feet} \cw{}{are} \cw{}{aching}\\
 \noindent \cw{}{And} \cw{}{your} \cw{Eb}{back} \cw{}{is} \cw{}{pretty} \cw{}{tired}\\
@@ -64,6 +73,7 @@
 
 
 \begin{minipage}{\linewidth}
+\raggedright
 \paragraphtitle{Pre-Chorus}
 \noindent \cw{Cm}{} \cw{}{And} \cw{}{here} \cw{}{it} \cw{}{is,} \cw{}{our} \cw{D7}{final} \cw{}{night} \cw{}{alive}\\
 \noindent \cw{}{And} \cw{}{as} \cw{}{the} \cw{Gm}{earth} \cw{}{burns} \cw{Gb+}{to} \cw{}{the} \cw{Gm/F}{ground}\\
@@ -72,6 +82,7 @@
 
 
 \begin{minipage}{\linewidth}
+\raggedright
 \paragraphtitle{Chorus}
 \noindent \cw{Eb7}{you} \cw{}{that} \cw{}{I} \cw{Ebm6}{lie} \cw{}{with}\\
 \noindent \cw{}{As} \cw{}{the} \cw{B}{atom} \cw{}{bomb} \cw{D7}{locks} \cw{}{in}\\
@@ -81,6 +92,7 @@
 
 
 \begin{minipage}{\linewidth}
+\raggedright
 \paragraphtitle{Verse 2}
 \noindent \lyricline{You put your final suit on}\\
 \noindent \lyricline{I paint my fingernails}\\
@@ -94,6 +106,7 @@
 
 
 \begin{minipage}{\linewidth}
+\raggedright
 \paragraphtitle{Pre-Chorus}
 \noindent \cw{Cm}{} \cw{}{And} \cw{}{here} \cw{}{it} \cw{}{is,} \cw{}{our} \cw{D7}{final} \cw{}{night} \cw{}{alive}\\
 \noindent \cw{}{And} \cw{}{as} \cw{}{the} \cw{Gm}{earth} \cw{}{burns} \cw{Gb+}{to} \cw{}{the} \cw{Gm/F}{ground}\\
@@ -102,6 +115,7 @@
 
 
 \begin{minipage}{\linewidth}
+\raggedright
 \paragraphtitle{Chorus}
 \noindent \cw{Eb7}{you} \cw{}{that} \cw{}{I} \cw{Ebm6}{lie} \cw{}{with}\\
 \noindent \cw{}{As} \cw{}{the} \cw{B}{atom} \cw{}{bomb} \cw{D7}{locks} \cw{}{in}\\
@@ -111,6 +125,1000 @@
 \noindent \cw{}{As} \cw{}{the} \cw{B}{atom} \cw{}{bomb} \cw{D7}{locks} \cw{}{in}\\
 \noindent \cw{}{Yes,} \cw{}{it's} \cw{Eb7}{you} \cw{}{I} \cw{}{welcome} \cw{Ebm6}{death} \cw{}{with}\\
 \noindent \cw{}{As} \cw{}{the} \cw{B}{world,} \cw{}{as} \cw{}{the} \cw{D7}{world} \cw{}{caves} \cw{}{in}\\
+\end{minipage}
+
+\end{multicols}
+\newpage
+\metaTitle{Fürstenfeld}
+\metaArtist{STS}
+
+\begin{multicols}{2}
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Intro}
+\noindent \cw{G}{Langsam} \cw{}{find't} \cw{}{der} \cw{D}{Tag} \cw{}{sei} \cw{}{End}\\
+\noindent \cw{C}{und} \cw{}{die} \cw{}{Nacht} \cw{}{be-}\cw{G}{ginnt}\\
+\noindent \cw{Em}{In} \cw{}{der} \cw{}{Kärtnerstrass'n} \cw{Bm}{do} \cw{}{singt} \cw{}{aner}\\
+\noindent \cw{C}{"Blowing} \cw{}{in} \cw{}{the} \cw{D}{wind"}\\
+\noindent \cw{G}{Hat} \cw{}{a} \cw{}{greanes} \cw{D}{Röckerl} \cw{}{an,}\\
+\noindent \cw{C}{steht} \cw{}{da} \cw{}{ganz} \cw{}{ver-}\cw{G}{lorn}\\
+\noindent \cw{Em}{Und} \cw{}{der} \cw{}{Steffl} \cw{}{der} \cw{}{schaut} \cw{Bm}{owi} \cw{}{auf} \cw{}{den}\\
+\noindent \cw{C}{oarmen} \cw{D}{Steirer-}\cw{G}{buam}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{Der hat woll'n sei Glück probiern}\\
+\noindent \lyricline{in der grossen fremden Stadt}\\
+\noindent \lyricline{Hat glaubt sei Musik bringt eam aufs}\\
+\noindent \lyricline{Rennbahnexpress-Titelblatt}\\
+\noindent \lyricline{Aus der Traum zerplatzt wia}\\
+\noindent \lyricline{Seifenblosn nix is blieb'n}\\
+\noindent \lyricline{Ois wia a paar Schilling in}\\
+\noindent \lyricline{seim Gitarrenkoffer drin}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Interlude}
+\noindent \cw{G}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 1}
+\noindent \cw{D}{Wochenl-}\cw{C}{ang} \cw{}{steh} \cw{}{i} \cw{}{scho} \cw{D}{do}\\
+\noindent \lyricline{Wochenlang plog i mi o}\\
+\noindent \lyricline{I spü mia die Finger wund}\\
+\noindent \cw{C}{Und} \cw{}{sing} \cw{}{sog-}\cw{D}{or} \cw{}{Do} \cw{}{kummt} \cw{}{die} \cw{G}{Sunn}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{Doch es is zum narrisch wern}\\
+\noindent \lyricline{Kaner will mi singen hearn}\\
+\noindent \lyricline{Langsam kriag i wirklich gnua}\\
+\noindent \lyricline{I frog mi wos i do dua}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \cw{D}{} \cw{}{Da} \cw{}{geht} \cw{}{den} \cw{C}{ganzen} \cw{}{Tag} \cw{}{der} \cw{G}{Wind}\\
+\noindent \cw{C/G}{}\cw{G}{}\cw{D}{}\\
+\noindent \cw{}{Nix} \cw{}{ois} \cw{C}{Baustelln} \cw{}{das} \cw{}{ka} \cw{G}{Mensch} \cw{}{wos} \cw{}{find}\\
+\noindent \cw{C/G}{}\cw{G}{}\\
+\noindent \cw{D}{} \cw{}{Die} \cw{}{Buren-}\cw{C}{häut'ln} \cw{}{san} \cw{}{ein} \cw{G}{Graus}\\
+\noindent \cw{C/G}{}\cw{G}{}\cw{D}{}\\
+\noindent \cw{}{Und} \cw{}{im} \cw{}{Ka--}\cw{D}{ffeehaus} \cw{}{brennst} \cw{}{di} \cw{G}{aus}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus}
+\noindent \cw{D}{} \cw{}{I} \cw{}{wü} \cw{}{wieder} \cw{G}{ham,} \cw{D}{} \cw{}{fühl} \cw{}{mi} \cw{}{do} \cw{}{so} \cw{}{al--}\cw{G}{lan}\\
+\noindent \cw{D}{} \cw{}{I} \cw{}{brauch} \cw{}{ka} \cw{}{grosse} \cw{G}{Welt,} \cw{C}{i} \cw{}{will} \cw{D}{ham} \cw{}{nach} \cw{}{Fürsten--}\cw{G}{feld}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 2}
+\noindent \lyricline{In der Zeitung da ham'S gschriem}\\
+\noindent \lyricline{Da gibts a Szene do muasst hin}\\
+\noindent \lyricline{Was die wolln des soin die schreim}\\
+\noindent \lyricline{Mia ka de Szene g'stoin bleim}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{Da geh i gestern ins U4}\\
+\noindent \lyricline{Fangt a Diandl a zum redn mit mir}\\
+\noindent \lyricline{Schwoarze Lipp'n grüne Hoar}\\
+\noindent \lyricline{Do kannst ja Angst kriang wirklich woahr}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus}
+\noindent \cw{D}{} \cw{}{I} \cw{}{wü} \cw{}{wieder} \cw{G}{ham,} \cw{D}{} \cw{}{fühl} \cw{}{mi} \cw{}{do} \cw{}{so} \cw{}{al--}\cw{G}{lan}\\
+\noindent \cw{D}{} \cw{}{I} \cw{}{brauch} \cw{}{ka} \cw{}{grosse} \cw{G}{Welt,} \cw{C}{i} \cw{}{will} \cw{D}{ham} \cw{}{nach} \cw{}{Fürsten--}\cw{G}{feld}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Interlude}
+\noindent \cw{D}{}\cw{C}{}\cw{G}{}\\
+\noindent \cw{D}{}\cw{C}{}\cw{G}{}\\
+\noindent \cw{D}{}\cw{C}{}\cw{G}{}\\
+\noindent \cw{C}{}\cw{D}{}\cw{G}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 3}
+\noindent \lyricline{Niemals spiel i mehr in Wien}\\
+\noindent \lyricline{Wien hat mi gor ned verdient}\\
+\noindent \lyricline{I spiel höchstens no in Graz}\\
+\noindent \lyricline{Sinabelkirchen und Stinatz}\\
+\noindent \lyricline{I brauch kan Gürtel i brauch kan Ring}\\
+\noindent \lyricline{I will z'ruck hintern Semmering}\\
+\noindent \lyricline{I brauch nur des bissl Göid}\\
+\noindent \lyricline{Für die Fahrt nach Fürstenfeld}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus 2x}
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Outro}
+\noindent \cw{D}{}\cw{G}{}\\
+\end{minipage}
+
+\end{multicols}
+\newpage
+\metaTitle{Hey Jude}
+\metaArtist{The Beatles}
+
+\begin{multicols}{2}
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 1}
+\noindent \cw{F}{Hey} \cw{}{Jude,} \cw{G}{don't} \cw{}{make} \cw{}{it} \cw{C}{bad}\\
+\noindent \cw{}{Take} \cw{}{a} \cw{C7}{sad} \cw{}{song} \cw{}{and} \cw{}{make} \cw{}{it} \cw{F}{better}\\
+\noindent \cw{}{Remember} \cw{F7}{to} \cw{}{let} \cw{}{her} \cw{}{into} \cw{}{your} \cw{Bb}{heart}\\
+\noindent \cw{}{Then} \cw{}{you} \cw{}{can} \cw{C}{start} \cw{}{to} \cw{}{make} \cw{}{it} \cw{F}{better}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 2}
+\noindent \lyricline{Hey Jude, don't be afraid}\\
+\noindent \lyricline{You were made to go out and get her}\\
+\noindent \lyricline{The minute you let her under your skin}\\
+\noindent \lyricline{Then you begin to make it better}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus}
+\noindent \cw{}{And} \cw{C}{anytime} \cw{}{you} \cw{}{feel} \cw{}{the} \cw{E7}{pain,}\\
+\noindent \cw{}{hey} \cw{}{Jude,} \cw{}{re-}\cw{Am}{frain}\\
+\noindent \cw{}{Don't} \cw{}{carry} \cw{}{the} \cw{D7}{world}\\
+\noindent \cw{}{upon} \cw{}{your} \cw{G}{shoulders}\\
+\noindent \cw{}{For} \cw{}{well} \cw{}{you} \cw{C}{know} \cw{}{that} \cw{}{it's} \cw{}{a} \cw{E7}{fool}\\
+\noindent \cw{}{who} \cw{}{plays} \cw{}{it} \cw{Am}{cool}\\
+\noindent \cw{}{By} \cw{}{making} \cw{}{his} \cw{D7}{world} \cw{}{a} \cw{}{little} \cw{G}{colder}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Interlude}
+\noindent \cw{F}{Na-na-na-na-na-na-na-na-na-na,}\\
+\noindent \cw{C}{yeah,} \cw{G}{hey} \cw{}{Jude}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 3}
+\noindent \lyricline{Hey Jude, don't let me down}\\
+\noindent \lyricline{You have found her, now go and get her}\\
+\noindent \lyricline{Remember to let her into your heart}\\
+\noindent \lyricline{Then you can start to make it better}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus}
+\noindent \lyricline{So let it out and let it in,}\\
+\noindent \lyricline{hey Jude, begin}\\
+\noindent \lyricline{You're waiting for}\\
+\noindent \lyricline{someone to perform with}\\
+\noindent \lyricline{And don't you know that it's just you?}\\
+\noindent \lyricline{Hey Jude, you'll do}\\
+\noindent \lyricline{The movement you need is on your shoulders}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Interlude}
+\noindent \cw{F}{Na-na-na-na-na-na-na-na-na-na,}\\
+\noindent \cw{C}{yeah,} \cw{G}{hey} \cw{}{Jude}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 4}
+\noindent \lyricline{Hey Jude, don't make it bad}\\
+\noindent \lyricline{Take a sad song and make it better}\\
+\noindent \lyricline{Remember to let her under your skin}\\
+\noindent \lyricline{Then you begin to make it better}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Bridge}
+\noindent \cw{}{Better,} \cw{C}{better,} \cw{E7}{better,}\\
+\noindent \cw{}{better,} \cw{Am}{better,} \cw{}{oh} \cw{D7}{}\\
+\noindent \cw{}{Nah,} \cw{}{nah} \cw{G}{nah,} \cw{}{nah,} \cw{}{nah,} \cw{}{nah,} \cw{}{nah,} \cw{C}{yeah}\\
+\noindent \cw{}{Nah,} \cw{}{nah} \cw{E7}{nah,} \cw{}{nah,} \cw{}{nah,} \cw{}{nah,} \cw{}{nah,} \cw{Am}{yeah}\\
+\noindent \cw{}{Nah,} \cw{}{nah} \cw{D7}{nah,} \cw{}{nah,} \cw{}{nah,} \cw{}{nah,} \cw{}{nah,} \cw{G}{yeah}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Outro}
+\noindent \cw{F}{Na-na-na-na-na-na-na-na-na-na,}\\
+\noindent \cw{C}{yeah,} \cw{G}{hey} \cw{}{Jude}\\
+\noindent \cw{F}{Na-na-na-na-na-na-na-na-na-na,}\\
+\noindent \cw{C}{yeah,} \cw{G}{hey} \cw{}{Jude}\\
+\end{minipage}
+
+\end{multicols}
+\newpage
+\metaTitle{House of the Rising Sun}
+\metaArtist{Traditional The Animals' Version}
+
+\begin{multicols}{2}
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Intro}
+\noindent \cw{Am}{} \cw{C}{} \cw{D}{} \cw{F}{}\\
+\noindent \cw{Am}{} \cw{E}{} \cw{Am}{} \cw{E}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 1}
+\noindent \cw{}{There} \cw{Am}{is} \cw{}{a} \cw{C}{house} \cw{}{in} \cw{D}{New} \cw{}{Orleans} \cw{F}{}\\
+\noindent \cw{}{They} \cw{Am}{call} \cw{}{the} \cw{Am}{Rising} \cw{E}{Sun} \cw{E}{}\\
+\noindent \cw{}{And} \cw{}{it's} \cw{Am}{been} \cw{}{the} \cw{C}{ruin} \cw{}{of} \cw{D}{many} \cw{}{a} \cw{}{poor} \cw{}{boy} \cw{F}{}\\
+\noindent \cw{}{And} \cw{Am}{God,} \cw{}{I} \cw{E}{know} \cw{}{I'm} \cw{Am}{one}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Interlude}
+\noindent \cw{C}{}\cw{D}{}\cw{F}{}\cw{Am}{}\cw{E}{}\cw{Am}{}\cw{E}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 2}
+\noindent \cw{}{My} \cw{Am}{mother} \cw{C}{was} \cw{}{a} \cw{D}{tailor} \cw{F}{}\\
+\noindent \cw{}{She} \cw{Am}{sewed} \cw{}{my} \cw{C}{new} \cw{}{blue} \cw{E}{jeans} \cw{E}{}\\
+\noindent \cw{}{My} \cw{Am}{father} \cw{C}{was} \cw{}{a} \cw{D}{gamblin'} \cw{F}{man}\\
+\noindent \cw{Am}{Down} \cw{}{in} \cw{E}{New} \cw{}{Or--}\cw{Am}{leans}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 3}
+\noindent \cw{}{Now} \cw{}{the} \cw{Am}{only} \cw{C}{thing} \cw{}{a} \cw{Dm}{gambler} \cw{}{ne-}\cw{F}{eds}\\
+\noindent \cw{}{Is} \cw{}{a} \cw{Am}{suitcase} \cw{C}{and} \cw{}{a} \cw{E}{trunk} \cw{E}{}\\
+\noindent \cw{}{And} \cw{}{the} \cw{Am}{only} \cw{C}{time} \cw{D}{he's} \cw{}{satisfied}\\
+\noindent \lyricline{Is when he's on a trump}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 4}
+\noindent \lyricline{Oh mother, tell your children}\\
+\noindent \lyricline{Not to do what I have done}\\
+\noindent \lyricline{Spend your lives in sin and misery}\\
+\noindent \lyricline{In the house of The Rising Sun}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 5}
+\noindent \lyricline{Well, I got one foot on the platform}\\
+\noindent \lyricline{The other foot on the train}\\
+\noindent \lyricline{I'm goin' back to New Orleans}\\
+\noindent \lyricline{To wear that ball and chain}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 6}
+\noindent \lyricline{Well, there is a house in New Orleans}\\
+\noindent \lyricline{They call The Rising Sun}\\
+\noindent \lyricline{And it's been the ruin of many a poor boy}\\
+\noindent \lyricline{And God, I know I'm one}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Outro Fade out}
+\noindent \cw{Am}{} \cw{Dm}{} \cw{Am}{} \cw{Dm}{}\\
+\end{minipage}
+
+\end{multicols}
+\newpage
+\metaTitle{Scarborough Fair}
+\metaArtist{Simon and Garfunkel}
+
+\begin{multicols}{2}
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Both}
+\noindent \cw{Am}{Are} \cw{}{you} \cw{}{going} \cw{}{to} \cw{G}{Scarborough} \cw{Am}{Fair?}\\
+\noindent \cw{C}{Parsley,} \cw{Am}{sage,} \cw{C}{rose-}\cw{Dm}{mary,} \cw{}{and} \cw{Am}{thyme.}\\
+\noindent \cw{Am}{Remember} \cw{C}{me} \cw{}{to} \cw{}{one} \cw{}{who} \cw{}{lives} \cw{G}{there.}\\
+\noindent \cw{Am}{She} \cw{}{once} \cw{G}{was} \cw{}{a} \cw{}{true} \cw{}{love} \cw{}{of} \cw{Am}{mine.}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Man}
+\noindent \lyricline{Tell her to make me a cambric shirt}\\
+\noindent \lyricline{Parsley, sage, rosemary and thyme}\\
+\noindent \lyricline{Without any seam nor needlework}\\
+\noindent \lyricline{And then she'll be a true love of mine}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{Tell her to wash it in yonder dry well}\\
+\noindent \lyricline{Parsley, sage, rosemary and thyme}\\
+\noindent \lyricline{Which never sprung water nor rain ever fell}\\
+\noindent \lyricline{And then she'll be a true love of mine}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{Tell her to dry it on yonder thorn}\\
+\noindent \lyricline{Parsley, sage, rosemary and thyme}\\
+\noindent \lyricline{Which never bore blossom since Adam was born}\\
+\noindent \lyricline{And then she'll be a true love of mine}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{Ask her to do me this courtesy}\\
+\noindent \lyricline{Parsley, sage, rosemary and thyme}\\
+\noindent \lyricline{And ask for a like favour from me}\\
+\noindent \lyricline{And then she'll be a true love of mine}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Both}
+\noindent \lyricline{Have you been to Scarborough Fair?}\\
+\noindent \lyricline{Parsley, sage, rosemary and thyme}\\
+\noindent \lyricline{Remember me from one who lives there}\\
+\noindent \lyricline{For he once was a true love of mine}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Woman}
+\noindent \lyricline{Ask him to find me an acre of land}\\
+\noindent \lyricline{Parsley, sage, rosemary and thyme}\\
+\noindent \lyricline{Between the salt water and the sea-sand}\\
+\noindent \lyricline{For then he'll be a true love of mine}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{Ask him to plough it with a lamb's horn}\\
+\noindent \lyricline{Parsley, sage, rosemary and thyme}\\
+\noindent \lyricline{And sow it all over with one peppercorn}\\
+\noindent \lyricline{For then he'll be a true love of mine}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{Ask him to reap it with a sickle of leather}\\
+\noindent \lyricline{Parsley, sage, rosemary and thyme}\\
+\noindent \lyricline{And gather it up with a rope made of heather}\\
+\noindent \lyricline{For then he'll be a true love of mine}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{When he has done and finished his work}\\
+\noindent \lyricline{Parsley, sage, rosemary and thyme}\\
+\noindent \lyricline{Ask him to come for his cambric shirt}\\
+\noindent \lyricline{For then he'll be a true love of mine}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Both}
+\noindent \lyricline{If you say that you can't, then I shall reply}\\
+\noindent \lyricline{Parsley, sage, rosemary and thyme}\\
+\noindent \lyricline{Oh, Let me know that at least you will try}\\
+\noindent \lyricline{Or you'll never be a true love of mine}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{Love imposes impossible tasks}\\
+\noindent \lyricline{Parsley, sage, rosemary and thyme}\\
+\noindent \lyricline{But none more than any heart would ask}\\
+\noindent \lyricline{I must know you're a true love of mine}\\
+\end{minipage}
+
+\end{multicols}
+\newpage
+\metaTitle{Smile}
+\metaArtist{David Gilmour}
+
+\begin{multicols}{2}
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Intro 2x}
+\noindent \cw{C}{}\cw{CM7}{}\cw{Am}{}\cw{CM7}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 1}
+\noindent \cw{C}{Would} \cw{}{this} \cw{CM7}{do}\\
+\noindent \cw{}{To} \cw{C}{make} \cw{}{it} \cw{}{all-}\cw{CM7}{right}\\
+\noindent \cw{C}{While} \cw{}{sleep} \cw{}{has} \cw{D}{} \cw{}{taken} \cw{}{you}\\
+\noindent \cw{}{Where} \cw{C}{I'm} \cw{}{out} \cw{CM7}{of} \cw{}{sight}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus}
+\noindent \cw{Dm}{I'll} \cw{}{Make} \cw{}{my} \cw{G}{Getaway}\\
+\noindent \cw{Fm}{Time} \cw{}{on} \cw{}{my} \cw{G7}{own}\\
+\noindent \cw{Dm}{Search} \cw{}{for} \cw{}{a} \cw{G}{better} \cw{}{way}\\
+\noindent \cw{}{To} \cw{Fm}{find} \cw{}{my} \cw{}{way} \cw{C+9}{home} \cw{}{to} \cw{C}{your}\\
+\noindent \cw{CM7}{} \cw{}{Smile}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 2}
+\noindent \lyricline{Wasting days and days}\\
+\noindent \lyricline{on this fight}\\
+\noindent \lyricline{always down and up}\\
+\noindent \lyricline{half the night}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus}
+\noindent \lyricline{Hopeless to reminisce}\\
+\noindent \lyricline{through the dark hours}\\
+\noindent \lyricline{we'll only sacrifice}\\
+\noindent \lyricline{what time will allow us you're}\\
+\noindent \lyricline{sighing}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 3}
+\noindent \lyricline{All alone}\\
+\noindent \lyricline{Though you're right here}\\
+\noindent \lyricline{Now it's time to go}\\
+\noindent \lyricline{From your sad stare}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus}
+\noindent \lyricline{Make my Getaway}\\
+\noindent \lyricline{Time on my own}\\
+\noindent \lyricline{Leaving's a better way}\\
+\noindent \lyricline{to find my home to your}\\
+\noindent \lyricline{smile}\\
+\end{minipage}
+
+\end{multicols}
+\newpage
+\metaTitle{Soldier of Fortune}
+\metaArtist{Deep Purple}
+
+\begin{multicols}{2}
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Intro}
+\noindent \cw{Gm}{}\cw{Dm}{}\cw{C}{}\cw{Gm}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 1}
+\noindent \cw{}{I} \cw{}{have} \cw{Gm}{often} \cw{}{told} \cw{}{you} \cw{}{stories} \cw{}{a-}\cw{F}{bout} \cw{}{the} \cw{}{way}\\
+\noindent \cw{}{I} \cw{Gm}{lived} \cw{}{the} \cw{}{life} \cw{}{of} \cw{}{a} \cw{}{drifter}\\
+\noindent \cw{Dm}{} \cw{}{Waiting} \cw{}{for} \cw{}{the} \cw{}{day}\\
+\noindent \cw{}{When} \cw{}{I'd} \cw{Gm}{take} \cw{}{your} \cw{}{hand} \cw{}{and} \cw{}{sing} \cw{}{you} \cw{}{songs}\\
+\noindent \cw{}{Then} \cw{F}{maybe} \cw{}{you} \cw{}{would} \cw{}{say}\\
+\noindent \cw{Gm}{} \cw{}{"Come} \cw{}{lay} \cw{}{with} \cw{}{me} \cw{}{and} \cw{}{love} \cw{}{me"}\\
+\noindent \cw{Dm}{} \cw{}{And} \cw{}{I} \cw{}{would} \cw{}{surely} \cw{}{stay} \cw{Dm}{}\cw{C}{}\cw{B}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus}
+\noindent \cw{B}{} \cw{}{But} \cw{}{I} \cw{C}{feel} \cw{}{I'm} \cw{}{growing} \cw{Gm}{older} \cw{G}{}\cw{F}{}\cw{D\#}{}\\
+\noindent \cw{}{And} \cw{}{the} \cw{F}{songs} \cw{}{that} \cw{}{I} \cw{}{have} \cw{B}{sung}\\
+\noindent \cw{D7}{Echo} \cw{}{in} \cw{}{the} \cw{Gm}{distance}\\
+\noindent \cw{}{Like} \cw{}{the} \cw{F}{sound}\\
+\noindent \cw{}{Of} \cw{}{a} \cw{B}{windmill} \cw{}{going} \cw{D\#}{round}\\
+\noindent \cw{D\#}{}\cw{D}{}\cw{Cm}{Guess} \cw{}{I} \cw{}{will} \cw{}{always} \cw{}{be} \cw{}{a} \cw{}{soldier} \cw{}{of} \cw{}{fortune}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 2}
+\noindent \cw{}{Many} \cw{Gm}{times} \cw{}{I've} \cw{}{been} \cw{}{a} \cw{}{traveller}\\
+\noindent \cw{}{I} \cw{F}{looked} \cw{}{for} \cw{}{something} \cw{}{new}\\
+\noindent \cw{}{In} \cw{Gm}{days} \cw{}{of} \cw{}{old} \cw{}{when} \cw{}{nights} \cw{}{were} \cw{}{cold}\\
+\noindent \cw{Dm}{} \cw{}{I} \cw{}{wandered} \cw{}{without} \cw{}{you}\\
+\noindent \cw{Gm}{} \cw{}{But} \cw{}{those} \cw{}{days} \cw{}{I} \cw{}{thought} \cw{}{my} \cw{}{eyes} \cw{}{had}\\
+\noindent \cw{F}{seen} \cw{}{you} \cw{}{standing} \cw{}{near}\\
+\noindent \cw{Gm}{} \cw{}{Though} \cw{}{blindness} \cw{}{is} \cw{}{confusing}\\
+\noindent \cw{Dm}{} \cw{}{It} \cw{}{shows} \cw{}{that} \cw{}{you're} \cw{}{not} \cw{}{here} \cw{Dm}{}\cw{C}{}\cw{B}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus}
+\noindent \lyricline{Now I feel I'm growing older}\\
+\noindent \lyricline{And the songs that I have sung}\\
+\noindent \lyricline{Echo in the distance}\\
+\noindent \lyricline{Like the sound}\\
+\noindent \lyricline{Of a windmill going round}\\
+\noindent \lyricline{Guess I will always be a soldier of fortune}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \cw{}{Yes} \cw{Gm}{I} \cw{}{can} \cw{}{hear} \cw{}{the} \cw{F}{sound}\\
+\noindent \cw{}{Of} \cw{}{a} \cw{B}{windmill} \cw{}{going} \cw{Eb}{round}\\
+\noindent \cw{Cm}{Guess} \cw{}{I'll} \cw{}{always} \cw{Dm}{be} \cw{}{a} \cw{}{soldier} \cw{}{of} \cw{Gm}{fortune}\\
+\noindent \cw{}{I} \cw{Eb}{guess} \cw{}{I'll} \cw{}{always} \cw{}{be}\cw{Dm7}{}\\
+\noindent \cw{}{A} \cw{}{soldier} \cw{}{of} \cw{}{for-}\cw{G}{tune}\\
+\end{minipage}
+
+\end{multicols}
+\newpage
+\metaTitle{Zeit}
+\metaArtist{Rammstein}
+
+\begin{multicols}{2}
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Intro}
+\noindent \cw{Gm}{}\cw{D/F\#}{}\cw{Eb}{}\cw{Dm}{}\cw{2x}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 1}
+\noindent \cw{Gm}{Manches} \cw{}{sollte,} \cw{}{manches} \cw{}{nicht}\\
+\noindent \cw{}{Wir} \cw{D/F\#}{sehen,} \cw{}{doch} \cw{}{sind} \cw{}{wir} \cw{}{blind}\\
+\noindent \cw{}{Wir} \cw{Eb}{werfen} \cw{}{Schatten} \cw{}{ohne} \cw{}{Licht}\cw{Dm}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \cw{Gm}{Nach} \cw{}{uns} \cw{}{wird} \cw{}{es} \cw{}{vorher} \cw{}{geben}\\
+\noindent \cw{D/F\#}{Aus} \cw{}{der} \cw{}{Jugend} \cw{}{wird} \cw{}{schon} \cw{}{Not}\\
+\noindent \cw{}{Wir} \cw{Eb}{sterben} \cw{}{weiter,} \cw{}{bis} \cw{}{wir} \cw{}{leben}\\
+\noindent \cw{Cm}{Sterben} \cw{}{lebend} \cw{}{in} \cw{}{den} \cw{}{Tod}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \cw{}{Dem} \cw{Gm}{Ende} \cw{}{treiben} \cw{}{wir} \cw{}{entgegen}\\
+\noindent \cw{D/F\#}{Keine} \cw{}{Rast,} \cw{}{nur} \cw{}{vorwärtsstreben}\\
+\noindent \cw{}{Am} \cw{Em}{Ufer} \cw{}{winkt} \cw{}{Unendlichkeit}\\
+\noindent \cw{}{Ge--}\cw{Cm}{fangen} \cw{}{so} \cw{}{im} \cw{Dm}{Fluss} \cw{}{der}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus 1}
+\noindent \cw{Gm}{Zeit,} \cw{}{Bitte} \cw{}{bleib} \cw{Bb}{stehen,} \cw{}{bleib} \cw{F}{stehen}\\
+\noindent \cw{Gm}{Zeit,} \cw{}{das} \cw{}{soll} \cw{}{immer} \cw{}{so} \cw{Bb}{weiter}\cw{Dm}{gehen}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Interlude}
+\noindent \cw{Gm}{}\cw{D/F\#}{}\cw{Eb}{}\cw{Dm}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 2}
+\noindent \lyricline{Warmer Körper ist bald kalt}\\
+\noindent \lyricline{Zukunft kann man nicht beschwören}\\
+\noindent \lyricline{Duldet keinen Aufenthalt}\\
+\noindent \lyricline{Erschaffen und sogleich zerstören}\\
+\noindent \lyricline{Ich liege hier in deinen Armen}\\
+\noindent \lyricline{Ach, könnt es doch für immer sein}\\
+\noindent \lyricline{Doch die Zeit kennt kein Erbarmen}\\
+\noindent \lyricline{Schon ist der Moment vorbei}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus}
+\noindent \cw{Gm}{Zeit,} \cw{}{Bitte} \cw{}{bleib} \cw{Bb}{stehen,} \cw{}{bleib} \cw{F}{stehen}\\
+\noindent \cw{Gm}{Zeit,} \cw{}{das} \cw{}{soll} \cw{}{immer} \cw{}{so} \cw{Bb}{weiter-}\cw{Dm}{gehen}\\
+\noindent \cw{Gm}{Zeit,} \cw{}{es} \cw{}{ist} \cw{}{so} \cw{Bb}{schön,} \cw{}{so} \cw{F}{schön}\\
+\noindent \cw{Eb}{Ein} \cw{}{jeder} \cw{}{kennt}\\
+\noindent \cw{Bb}{den} \cw{}{perfekten} \cw{}{Mo--}\cw{F}{ment}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Interlude}
+\noindent \cw{Gm}{}\cw{Bb}{}\cw{F}{}\cw{2x}{}\\
+\noindent \cw{Eb}{Zeit,} \cw{}{bitte} \cw{}{bleib} \cw{Bb}{stehen,} \cw{}{bleib} \cw{F}{stehen}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 3}
+\noindent \lyricline{Wenn unsere Zeit gekommen ist}\\
+\noindent \lyricline{Dann ist es Zeit zu gehen}\\
+\noindent \lyricline{Aufhören, wenn's am schönsten ist}\\
+\noindent \lyricline{Die Uhren bleiben stehen}\\
+\noindent \lyricline{So perfekt ist der Moment}\\
+\noindent \lyricline{Doch weiter läuft die Zeit}\\
+\noindent \lyricline{Augenblick, verweile doch}\\
+\noindent \lyricline{Ich bin noch nicht bereit}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus}
+\noindent \cw{Gm}{Zeit,} \cw{}{Bitte} \cw{}{bleib} \cw{Bb}{stehen,} \cw{}{bleib} \cw{F}{stehen}\\
+\noindent \cw{Gm}{Zeit,} \cw{}{das} \cw{}{soll} \cw{}{immer} \cw{}{so} \cw{Bb}{weiter-}\cw{Dm}{gehen}\\
+\noindent \cw{Gm}{Zeit,} \cw{}{es} \cw{}{ist} \cw{}{so} \cw{Bb}{schön,} \cw{}{so} \cw{F}{schön}\\
+\noindent \cw{Eb}{Ein} \cw{}{jeder} \cw{}{kennt}\\
+\noindent \cw{Bb}{den} \cw{}{perfekten} \cw{}{Mo--}\cw{F}{ment}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Outro}
+\noindent \cw{Gm}{}\cw{Dsus4}{}\cw{D}{}\cw{Eb}{}\cw{Dsus4}{}\cw{D}{}\cw{Gm}{}\\
+\end{minipage}
+
+\end{multicols}
+\newpage
+\metaTitle{Zombie}
+\metaArtist{The Cranbarries}
+
+\begin{multicols}{2}
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Intro 4x}
+\noindent \cw{Em}{}\cw{C}{}\cw{G}{}\cw{D/F\#}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 1}
+\noindent \cw{Em}{Another} \cw{C}{head} \cw{}{hangs} \cw{}{lowly}\\
+\noindent \cw{G}{Child} \cw{}{is} \cw{}{slowly} \cw{D/F\#}{taken}\\
+\noindent \cw{Em}{And} \cw{}{the} \cw{C}{violence} \cw{}{caused} \cw{}{such} \cw{}{silence}\\
+\noindent \cw{G}{Who} \cw{}{are} \cw{}{we} \cw{D/F\#}{mistaken?}\\
+\noindent \cw{}{But} \cw{}{you} \cw{Em}{see,} \cw{}{it's} \cw{}{not} \cw{}{me}\\
+\noindent \cw{}{It's} \cw{}{not} \cw{C}{my} \cw{}{family}\\
+\noindent \cw{}{In} \cw{}{your} \cw{G}{head,} \cw{}{in} \cw{}{your} \cw{}{head,} \cw{}{they} \cw{}{are} \cw{D/F\#}{fighting}\\
+\noindent \cw{}{With} \cw{}{their} \cw{Em}{tanks} \cw{}{and} \cw{}{their} \cw{}{bombs}\\
+\noindent \cw{}{And} \cw{}{their} \cw{C}{bombs} \cw{}{and} \cw{}{their} \cw{}{guns}\\
+\noindent \cw{}{In} \cw{}{your} \cw{G}{head,} \cw{}{in} \cw{}{your} \cw{}{head,} \cw{}{they} \cw{}{are} \cw{D/F\#}{crying}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus}
+\noindent \cw{}{In} \cw{}{your} \cw{Em}{head,} \cw{}{in} \cw{}{your} \cw{C}{head}\\
+\noindent \cw{}{Zombie,} \cw{G}{zombie,} \cw{}{zombie--}\cw{D/F\#}{ie-ie}\\
+\noindent \cw{}{What's} \cw{}{in} \cw{Em}{your} \cw{}{head,} \cw{}{in} \cw{}{your} \cw{C}{head?}\\
+\noindent \cw{}{Zombie,} \cw{}{zombie,} \cw{G}{zombie-ie-}\cw{D/F\#}{ie-ie,} \cw{}{oh}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Instrumental + "do do..."}
+\noindent \cw{Em}{}\cw{C}{}\cw{G}{}\cw{D/F}{}\cw{x2}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 2}
+\noindent \lyricline{Another mother's breaking}\\
+\noindent \lyricline{Heart is taking over}\\
+\noindent \lyricline{When the violence causes silence}\\
+\noindent \lyricline{We must be mistaken}\\
+\noindent \lyricline{It's the same old theme}\\
+\noindent \lyricline{Since nineteen-sixteen}\\
+\noindent \lyricline{In your head, in your head, they're still fighting}\\
+\noindent \lyricline{With their tanks and their bombs}\\
+\noindent \lyricline{And their bombs and their guns}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Chorus}
+\noindent \cw{}{In} \cw{}{your} \cw{Em}{head,} \cw{}{in} \cw{}{your} \cw{C}{head}\\
+\noindent \cw{}{Zombie,} \cw{G}{zombie,} \cw{}{zombie--}\cw{D/F\#}{ie-ie}\\
+\noindent \cw{}{What's} \cw{}{in} \cw{Em}{your} \cw{}{head,} \cw{}{in} \cw{}{your} \cw{C}{head?}\\
+\noindent \cw{}{Zombie,} \cw{}{zombie,} \cw{G}{zombie-ie-}\cw{D/F\#}{ie-ie,} \cw{}{oh}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Instrumental + "do do..."}
+\noindent \cw{Em}{}\cw{C}{}\cw{G}{}\cw{D/F}{}\cw{x2}{}\\
+\noindent \cw{Em}{}\cw{C}{}\cw{Em}{}\cw{C}{}\cw{x2}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Solo}
+\noindent \cw{Em}{}\cw{C}{}\cw{G}{}\cw{D/F\#}{}\cw{x3}{}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Outro}
+\noindent \cw{Em}{}\cw{C}{}\cw{Em}{}\cw{C}{}\\
+\noindent \cw{Em}{}\cw{C}{}\cw{Em}{}\\
+\end{minipage}
+
+\end{multicols}
+\newpage
+\metaTitle{Piano Man}
+
+\begin{multicols}{2}
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Intro}
+\noindent \lyricline{Long Harmonica, Piano Interlude}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{It's nine o'clock on a Saturday}\\
+\noindent \lyricline{The regular crowd shuffles in}\\
+\noindent \lyricline{There's an old man sittin' next to me}\\
+\noindent \lyricline{Makin' love to his tonic and gin}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Short Harmonica}
+\noindent \lyricline{He says, "Son, can you play me a memory?}\\
+\noindent \lyricline{I'm not really sure how it goes}\\
+\noindent \lyricline{But it's sad and it's sweet, and I knew it complete}\\
+\noindent \lyricline{When I wore a younger man's clothes"}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{La, la-la, di-di-da}\\
+\noindent \lyricline{La-la, di-di-da, da-dum}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{Sing us a song, you're the piano man}\\
+\noindent \lyricline{Sing us a song tonight}\\
+\noindent \lyricline{Well, we're all in the mood for a melody}\\
+\noindent \lyricline{And you've got us feelin' alright}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Short Harmonica, Piano Interlude}
+\noindent \lyricline{Now John at the bar is a friend of mine}\\
+\noindent \lyricline{He gets me my drinks for free}\\
+\noindent \lyricline{And he's quick with a joke, or to light up your smoke}\\
+\noindent \lyricline{But there's some place that he'd rather be}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{He says, "Bill, I believe this is killing me"}\\
+\noindent \lyricline{As a smile ran away from his face}\\
+\noindent \lyricline{"Well, I'm sure that I could be a movie star}\\
+\noindent \lyricline{If I could get out of this place"}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{Oh, la, la-la, di-di-da}\\
+\noindent \lyricline{La-la, di-di-da, da-dum}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{Now Paul is a real-estate novelist}\\
+\noindent \lyricline{Who never had time for a wife}\\
+\noindent \lyricline{And he's talkin' with Davy who's still in the navy}\\
+\noindent \lyricline{And probably will be for life}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Short Harmonica}
+\noindent \lyricline{And the waitress is practicing politics}\\
+\noindent \lyricline{As the businessmen slowly get stoned}\\
+\noindent \lyricline{Yes, they're sharing a drink they call loneliness}\\
+\noindent \lyricline{But it's better than drinkin' alone}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Piano Solo}
+\noindent \lyricline{Sing us the song, you're the piano man}\\
+\noindent \lyricline{Sing us a song tonight}\\
+\noindent \lyricline{Well, we're all in the mood for a melody}\\
+\noindent \lyricline{And you've got us feelin' alright}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Short Harmonica}
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Piano Interlude}
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{piano}
+\noindent \lyricline{It's a pretty good crowd for a Saturday}\\
+\noindent \lyricline{And the manager gives me a smile}\\
+\noindent \lyricline{'Cause he knows that it's me they've been comin' to see}\\
+\noindent \lyricline{To forget about life for a while}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Piano Crescendo Interlude}
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{forte}
+\noindent \lyricline{And the piano, it sounds like a carnival}\\
+\noindent \lyricline{And the microphone smells like a beer}\\
+\noindent \lyricline{And they sit at the bar and put bread in my jar}\\
+\noindent \lyricline{And say, "Man, what are you doin' here?"}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{Oh, la, la-la, di-di-da}\\
+\noindent \lyricline{La-la, di-di-da, da-dum}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \lyricline{Sing us the song, you're the piano man}\\
+\noindent \lyricline{Sing us a song tonight}\\
+\noindent \lyricline{Well, we're all in the mood for a melody}\\
+\noindent \lyricline{And you've got us feelin' alright}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Short Harmonica, Piano Interlude}
+\end{minipage}
+
+\end{multicols}
+\newpage
+\metaTitle{Smile}
+\metaArtist{David Gilmour}
+
+\begin{multicols}{2}
+\begin{minipage}{\linewidth}
+\raggedright
+\paragraphtitle{Verse 1}
+\noindent \cw{}{To} \cw{C}{make} \cw{}{it} \cw{}{all} \cw{CM7}{right}\\
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+\raggedright
+\noindent \cw{C}{make} \cw{}{it} \cw{}{all} \cw{CM7}{right}\\
 \end{minipage}
 
 \end{multicols}

@@ -124,6 +124,14 @@ class Style:
 \usepackage{{multicol}}
 \usepackage[left={self.margin_left},right={self.margin_right},top={self.margin_top},bottom={self.margin_bottom}]{{geometry}}
 
+% Verhindert Underfull-\hbox-Warnungen an der Wurzel: die \cw-Tabular-Boxen sind
+% praktisch ungedehnbar (einzelne Wörter in fester Spalte), Blocksatz kann eine Zeile
+% damit oft nicht auf volle Spaltenbreite strecken. Songtext-Zeilen sollen ohnehin
+% linksbündig statt im Blocksatz stehen, das behebt die Ursache statt nur das Symptom.
+\raggedright
+\hbadness=10000
+\vbadness=10000
+
 \definecolor{{chordcolor}}{{HTML}}{{{self.chord_color}}}
 \definecolor{{lyriccolor}}{{HTML}}{{{self.lyric_color}}}
 \definecolor{{titlecolor}}{{HTML}}{{{self.title_color}}}
