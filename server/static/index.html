@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Corda Live-Editor</title>
+<style>
+  html, body { height: 100%; margin: 0; font-family: sans-serif; }
+  #layout { display: flex; height: 100vh; }
+
+  #sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    height: 100%;
+    box-sizing: border-box;
+    border-right: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    background: #fafafa;
+  }
+  #sidebar h2 { font-size: 13px; text-transform: uppercase; color: #666; margin: 12px 12px 6px; }
+  #new-song-btn {
+    margin: 0 12px 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  #song-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; }
+  #song-list li {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    font-size: 13px;
+  }
+  #song-list li:hover { background: #eef; }
+  #song-list li.active { background: #dde; }
+  #song-list .song-title { font-weight: 600; }
+  #song-list .song-artist { color: #777; font-size: 12px; }
+  #song-list .empty { color: #999; padding: 12px; font-size: 13px; cursor: default; }
+
+  #editor-pane { display: flex; flex-direction: column; width: 40%; height: 100%; }
+  #toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+    border-bottom: 1px solid #ccc;
+    font-size: 13px;
+  }
+  #current-filename { color: #555; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #save-btn { padding: 5px 12px; cursor: pointer; }
+  #save-status { font-size: 12px; color: #888; }
+  #save-status.error { color: #a33; }
+
+  #editor {
+    flex: 1;
+    box-sizing: border-box;
+    padding: 12px;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 14px;
+    border: none;
+    border-right: 1px solid #ccc;
+    resize: none;
+    outline: none;
+  }
+
+  #preview-pane { flex: 1; height: 100%; position: relative; }
+  #preview { width: 100%; height: 100%; border: none; }
+  #status {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 4px 10px;
+    background: #222;
+    color: #fff;
+    font-family: sans-serif;
+    font-size: 12px;
+    border-radius: 4px;
+    opacity: 0.85;
+    display: none;
+  }
+  #status.error { background: #a33; }
+  #log {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 40%;
+    overflow: auto;
+    background: #1e1e1e;
+    color: #f88;
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    padding: 8px;
+    display: none;
+    box-sizing: border-box;
+  }
+</style>
+</head>
+<body>
+<div id="layout">
+  <div id="sidebar">
+    <h2>Songs</h2>
+    <button id="new-song-btn">+ Neuer Song</button>
+    <ul id="song-list"><li class="empty">lade...</li></ul>
+  </div>
+
+  <div id="editor-pane">
+    <div id="toolbar">
+      <span id="current-filename">Neuer Song (nicht gespeichert)</span>
+      <span id="save-status"></span>
+      <button id="save-btn">Speichern</button>
+    </div>
+    <textarea id="editor" spellcheck="false" placeholder="---&#10;Title: ...&#10;---&#10;&#10;[Verse 1]&#10;My {B}feet are aching"></textarea>
+  </div>
+
+  <div id="preview-pane">
+    <div id="status"></div>
+    <iframe id="preview"></iframe>
+    <div id="log"></div>
+  </div>
+</div>
+<script>
+const editor = document.getElementById("editor");
+const preview = document.getElementById("preview");
+const status = document.getElementById("status");
+const log = document.getElementById("log");
+const songList = document.getElementById("song-list");
+const newSongBtn = document.getElementById("new-song-btn");
+const saveBtn = document.getElementById("save-btn");
+const saveStatus = document.getElementById("save-status");
+const currentFilenameEl = document.getElementById("current-filename");
+
+let debounceTimer = null;
+let currentUrl = null;
+let currentFilename = null; // null = neuer, noch nicht gespeicherter Song
+
+const STORAGE_KEY = "corda-editor-content";
+const DEFAULT_CONTENT = `---
+Title: Beispielsong
+Artist: Jemand
+---
+
+[Verse 1]
+My {B}feet are aching
+And your {Eb}back is pretty tired`;
+
+editor.value = localStorage.getItem(STORAGE_KEY) || DEFAULT_CONTENT;
+
+function setStatus(text, isError) {
+  status.textContent = text;
+  status.className = isError ? "error" : "";
+  status.style.display = text ? "block" : "none";
+}
+
+function setSaveStatus(text, isError) {
+  saveStatus.textContent = text;
+  saveStatus.className = isError ? "error" : "";
+}
+
+function updateFilenameLabel() {
+  currentFilenameEl.textContent = currentFilename || "Neuer Song (nicht gespeichert)";
+}
+
+async function renderPreview() {
+  const content = editor.value;
+  localStorage.setItem(STORAGE_KEY, content);
+  setStatus("rendere...", false);
+  log.style.display = "none";
+
+  try {
+    const res = await fetch("/api/render", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      setStatus(err.error || "Fehler", true);
+      if (err.log) {
+        log.textContent = err.log;
+        log.style.display = "block";
+      }
+      return;
+    }
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    preview.src = url;
+    if (currentUrl) URL.revokeObjectURL(currentUrl);
+    currentUrl = url;
+    setStatus("", false);
+  } catch (e) {
+    setStatus("Netzwerkfehler: " + e, true);
+  }
+}
+
+async function loadSongList() {
+  try {
+    const res = await fetch("/api/songs");
+    const songs = await res.json();
+    songList.innerHTML = "";
+    if (songs.length === 0) {
+      songList.innerHTML = '<li class="empty">noch keine Songs</li>';
+      return;
+    }
+    for (const song of songs) {
+      const li = document.createElement("li");
+      li.dataset.filename = song.filename;
+      li.innerHTML = `<div class="song-title"></div><div class="song-artist"></div>`;
+      li.querySelector(".song-title").textContent = song.title;
+      li.querySelector(".song-artist").textContent = song.artist || "";
+      if (song.filename === currentFilename) li.classList.add("active");
+      li.addEventListener("click", () => loadSong(song.filename));
+      songList.appendChild(li);
+    }
+  } catch (e) {
+    songList.innerHTML = '<li class="empty">Fehler beim Laden</li>';
+  }
+}
+
+async function loadSong(filename) {
+  const res = await fetch(`/api/songs/${encodeURIComponent(filename)}`);
+  if (!res.ok) return;
+  const data = await res.json();
+  editor.value = data.content;
+  currentFilename = data.filename;
+  updateFilenameLabel();
+  [...songList.children].forEach(li => li.classList.toggle("active", li.dataset.filename === currentFilename));
+  renderPreview();
+}
+
+newSongBtn.addEventListener("click", () => {
+  editor.value = DEFAULT_CONTENT;
+  currentFilename = null;
+  updateFilenameLabel();
+  [...songList.children].forEach(li => li.classList.remove("active"));
+  renderPreview();
+});
+
+saveBtn.addEventListener("click", async () => {
+  setSaveStatus("speichere...", false);
+  try {
+    const res = await fetch("/api/songs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: editor.value, filename: currentFilename }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setSaveStatus(data.error || "Fehler beim Speichern", true);
+      return;
+    }
+    currentFilename = data.filename;
+    updateFilenameLabel();
+    setSaveStatus("gespeichert", false);
+    setTimeout(() => setSaveStatus("", false), 2000);
+    loadSongList();
+  } catch (e) {
+    setSaveStatus("Netzwerkfehler", true);
+  }
+});
+
+editor.addEventListener("input", () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(renderPreview, 600);
+});
+
+updateFilenameLabel();
+loadSongList();
+renderPreview();
+</script>
+</body>
+</html>

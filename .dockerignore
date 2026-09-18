@@ -1,0 +1,9 @@
+.git
+.vscode
+.claude
+__pycache__/
+*.pyc
+output.aux
+output.log
+output.pdf
+output.tex

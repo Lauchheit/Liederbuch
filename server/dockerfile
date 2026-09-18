@@ -1,0 +1,20 @@
+FROM python:3.12-slim
+
+# pdflatex + die im README genannten Pakete (xcolor, multicol, geometry)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    texlive-latex-base \
+    texlive-latex-extra \
+    texlive-fonts-recommended \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Ganzes Projekt kopieren (main.py, transformer/, latex/, style.xml, server/)
+# -- Build-Kontext muss das Repo-Root sein, siehe .dockerignore
+COPY . .
+
+EXPOSE 8000
+CMD ["uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "8000"]

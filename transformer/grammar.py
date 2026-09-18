@@ -5,7 +5,7 @@ book            :   page (PAGEBREAK page)* LINEBREAK*
 
 PAGEBREAK       :   ANY_BREAK* "%NEW_SONG%" ANY_BREAK*
 
-page            :   (title_section ANY_BREAK)? paragraph (PARAGRAPH_BREAK paragraph)+ LINEBREAK*
+page            :   (title_section ANY_BREAK)? paragraph (PARAGRAPH_BREAK paragraph)* ANY_BREAK*
 
 title_section       :   "---" ANY_BREAK meta_token (INDENT_LINEBREAK meta_token)* ANY_BREAK "---"
 meta_token      :   (meta_category ":" SPACE* TEXT_LINE)

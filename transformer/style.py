@@ -1,4 +1,6 @@
-from dataclasses import dataclass, field
+import os
+import xml.etree.ElementTree as ET
+from dataclasses import dataclass, field, fields
 
 from transformer.transformer import MetaCategory, meta_macro_name
 
@@ -7,6 +9,16 @@ FONT_SIZES = [
     "tiny", "scriptsize", "footnotesize", "small",
     "normalsize", "large", "Large", "LARGE", "huge", "Huge",
 ]
+
+
+def _coerce(raw: str, py_type: type) -> object:
+    """Wandelt einen XML-Attributwert (immer ein String) in den von der
+    Dataclass erwarteten Python-Typ um (bool/int/str)."""
+    if py_type is bool:
+        return raw.strip().lower() in ("1", "true", "yes", "on")
+    if py_type is int:
+        return int(raw)
+    return raw
 
 
 @dataclass
@@ -106,6 +118,46 @@ class Style:
                 )
         if self.columns < 1:
             raise ValueError(f"columns={self.columns!r} muss mindestens 1 sein.")
+
+    @classmethod
+    def from_xml(cls, path: str) -> "Style":
+        """Baut einen Style aus einer XML-Datei (siehe style.xml als Beispiel).
+
+        Jedes XML-Attribut, dessen Name (mit "-" statt "_") einem Style-Feld
+        entspricht, überschreibt dessen Python-Default. Fehlt die Datei oder
+        ein Attribut, greift der in dieser Klasse hartcodierte Default -
+        die XML-Datei muss also nicht vollständig sein.
+        """
+        if not os.path.exists(path):
+            return cls()
+
+        root = ET.parse(path).getroot()
+        field_types = {f.name: f.type for f in fields(cls) if f.name != "meta_styles"}
+        overrides = {}
+
+        for element in root.iter():
+            for attr_name, raw_value in element.attrib.items():
+                field_name = attr_name.replace("-", "_")
+                if field_name in field_types:
+                    overrides[field_name] = _coerce(raw_value, field_types[field_name])
+
+        meta_el = root.find("meta-styles")
+        if meta_el is not None:
+            meta_styles = default_meta_styles()
+            mstyle_types = {f.name: f.type for f in fields(MetaStyle)}
+            for category_el in meta_el.findall("category"):
+                name = category_el.get("name")
+                if name not in MetaCategory.__members__:
+                    continue
+                category = MetaCategory[name]
+                kwargs = dict(meta_styles[category].__dict__)
+                for attr_name, raw_value in category_el.attrib.items():
+                    if attr_name in mstyle_types:
+                        kwargs[attr_name] = _coerce(raw_value, mstyle_types[attr_name])
+                meta_styles[category] = MetaStyle(**kwargs)
+            overrides["meta_styles"] = meta_styles
+
+        return cls(**overrides)
 
     def to_latex_preamble(self) -> str:
         chord_weight = r"\bfseries" if self.chord_bold else r"\mdseries"

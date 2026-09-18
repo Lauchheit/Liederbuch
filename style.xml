@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beispiel-Style für das Liederbuch (entspricht den Python-Defaults in
+  transformer/style.py). Fehlt ein Attribut oder die ganze Datei, greift
+  der jeweilige Python-Default - diese Datei muss also nie vollständig sein.
+
+  Farben: Hex-Code ohne "#" (z.B. "2E86AB").
+  Größen: LaTeX-Größenbefehl ohne Backslash, siehe FONT_SIZES in style.py
+          (tiny, scriptsize, footnotesize, small, normalsize, large, Large,
+          LARGE, huge, Huge).
+  Booleans: true/false (auch 1/0, yes/no, on/off).
+  Längen: beliebige LaTeX-Länge (z.B. "1.5em", "2pt", "2.2cm").
+-->
+<style>
+
+  <!-- Akkord-Beschriftung über der Silbe/dem Wort -->
+  <chord chord-color="2E86AB" chord-size="small" chord-bold="true" />
+
+  <!-- Liedtext -->
+  <lyric lyric-color="1A1A1A" lyric-size="normalsize" lyric-bold="false" />
+
+  <!-- Strophenlabel, z.B. "[Refrain]", "[Strophe 1]" -->
+  <!-- title-smallcaps hat Vorrang vor title-italic, wenn beide true sind -->
+  <paragraph-title
+      title-color="8A8A8A"
+      title-size="footnotesize"
+      title-bold="false"
+      title-italic="false"
+      title-smallcaps="true" />
+
+  <!-- Abstände -->
+  <spacing
+      paragraph-skip="1.5em"
+      title-gap="0.3em"
+      chord-lyric-gap="2pt" />
+
+  <!-- Spaltenlayout -->
+  <layout
+      columns="2"
+      column-sep="1.8em"
+      column-rule-width="0pt" />
+
+  <!-- Seitenränder -->
+  <margins
+      margin-left="2.2cm"
+      margin-right="1.2cm"
+      margin-top="1.2cm"
+      margin-bottom="2.5cm" />
+
+  <!-- Kopfzeile: ein <category>-Eintrag pro Metadaten-Kategorie aus dem
+       title_section-Block (Title/Artist/Subtitle/Instruction). Neue
+       Kategorie hinzufügen? Siehe README.md, Abschnitt "Style konfigurieren". -->
+  <meta-styles>
+    <category name="title"
+        color="1A1A1A" size="large" bold="true"
+        italic="false" smallcaps="false" center="false" />
+    <category name="artist"
+        color="6B6B6B" size="small" bold="false"
+        italic="true" smallcaps="false" center="false" />
+    <category name="subtitle"
+        color="8A8A8A" size="footnotesize" bold="false"
+        italic="true" smallcaps="false" center="false" />
+    <category name="instruction"
+        color="8A8A8A" size="footnotesize" bold="false"
+        italic="false" smallcaps="true" center="false" />
+  </meta-styles>
+
+</style>

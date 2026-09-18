@@ -1,0 +1,14 @@
+services:
+  editor:
+    build:
+      context: .
+      dockerfile: server/dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - corda-songs:/app/input
+    environment:
+      - CORDA_DATA_DIR=/app/input
+
+volumes:
+  corda-songs:
