@@ -8,7 +8,7 @@
   #layout { display: flex; height: 100vh; }
 
   #sidebar {
-    width: 220px;
+    width: 260px;
     flex-shrink: 0;
     height: 100%;
     box-sizing: border-box;
@@ -24,18 +24,64 @@
     font-size: 13px;
     cursor: pointer;
   }
+
+  #song-list-section { flex: 1; min-height: 0; display: flex; flex-direction: column; }
   #song-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; }
   #song-list li {
     padding: 8px 12px;
     cursor: pointer;
     border-bottom: 1px solid #eee;
     font-size: 13px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
   }
   #song-list li:hover { background: #eef; }
   #song-list li.active { background: #dde; }
+  #song-list li input[type="checkbox"] { margin-top: 3px; cursor: pointer; }
+  #song-list .song-text { flex: 1; min-width: 0; }
   #song-list .song-title { font-weight: 600; }
   #song-list .song-artist { color: #777; font-size: 12px; }
   #song-list .empty { color: #999; padding: 12px; font-size: 13px; cursor: default; }
+
+  #cart-section {
+    border-top: 2px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    max-height: 40%;
+    flex-shrink: 0;
+  }
+  #cart-section h2 { display: flex; justify-content: space-between; align-items: center; }
+  #cart-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; }
+  #cart-list li {
+    padding: 6px 12px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid #eee;
+  }
+  #cart-list .cart-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #cart-list button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: #666;
+    padding: 2px 4px;
+  }
+  #cart-list button:hover { color: #000; }
+  #cart-list button:disabled { color: #ccc; cursor: default; }
+  #cart-empty { color: #999; padding: 8px 12px; font-size: 12px; }
+  #render-book-btn {
+    margin: 8px 12px;
+    padding: 7px 10px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  #render-book-btn:disabled { cursor: default; opacity: 0.5; }
+  #book-status { font-size: 12px; color: #888; padding: 0 12px 8px; }
+  #book-status.error { color: #a33; }
 
   #editor-pane { display: flex; flex-direction: column; width: 40%; height: 100%; }
   #toolbar {
@@ -100,9 +146,19 @@
 <body>
 <div id="layout">
   <div id="sidebar">
-    <h2>Songs</h2>
-    <button id="new-song-btn">+ Neuer Song</button>
-    <ul id="song-list"><li class="empty">lade...</li></ul>
+    <div id="song-list-section">
+      <h2>Songs</h2>
+      <button id="new-song-btn">+ Neuer Song</button>
+      <ul id="song-list"><li class="empty">lade...</li></ul>
+    </div>
+
+    <div id="cart-section">
+      <h2><span>Warenkorb</span><span id="cart-count"></span></h2>
+      <ul id="cart-list"></ul>
+      <div id="cart-empty">Noch keine Songs ausgewählt</div>
+      <button id="render-book-btn" disabled>Buch rendern (PDF)</button>
+      <div id="book-status"></div>
+    </div>
   </div>
 
   <div id="editor-pane">
@@ -130,12 +186,19 @@ const newSongBtn = document.getElementById("new-song-btn");
 const saveBtn = document.getElementById("save-btn");
 const saveStatus = document.getElementById("save-status");
 const currentFilenameEl = document.getElementById("current-filename");
+const cartList = document.getElementById("cart-list");
+const cartCount = document.getElementById("cart-count");
+const cartEmpty = document.getElementById("cart-empty");
+const renderBookBtn = document.getElementById("render-book-btn");
+const bookStatus = document.getElementById("book-status");
 
 let debounceTimer = null;
 let currentUrl = null;
 let currentFilename = null; // null = neuer, noch nicht gespeicherter Song
+let songsByFilename = {}; // filename -> {filename, title, artist}, zuletzt geladene Songliste
 
 const STORAGE_KEY = "corda-editor-content";
+const CART_KEY = "corda-cart";
 const DEFAULT_CONTENT = `---
 Title: Beispielsong
 Artist: Jemand
@@ -146,6 +209,13 @@ My {B}feet are aching
 And your {Eb}back is pretty tired`;
 
 editor.value = localStorage.getItem(STORAGE_KEY) || DEFAULT_CONTENT;
+
+let cart = [];
+try {
+  cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+} catch (e) {
+  cart = [];
+}
 
 function setStatus(text, isError) {
   status.textContent = text;
@@ -158,8 +228,17 @@ function setSaveStatus(text, isError) {
   saveStatus.className = isError ? "error" : "";
 }
 
+function setBookStatus(text, isError) {
+  bookStatus.textContent = text;
+  bookStatus.className = isError ? "error" : "";
+}
+
 function updateFilenameLabel() {
   currentFilenameEl.textContent = currentFilename || "Neuer Song (nicht gespeichert)";
+}
+
+function saveCart() {
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
 async function renderPreview() {
@@ -200,24 +279,89 @@ async function loadSongList() {
   try {
     const res = await fetch("/api/songs");
     const songs = await res.json();
+    songsByFilename = {};
+    for (const song of songs) songsByFilename[song.filename] = song;
+
     songList.innerHTML = "";
     if (songs.length === 0) {
       songList.innerHTML = '<li class="empty">noch keine Songs</li>';
-      return;
+    } else {
+      for (const song of songs) {
+        const li = document.createElement("li");
+        li.dataset.filename = song.filename;
+        li.innerHTML = `
+          <input type="checkbox" title="Zum Warenkorb hinzufügen">
+          <div class="song-text">
+            <div class="song-title"></div>
+            <div class="song-artist"></div>
+          </div>`;
+        li.querySelector(".song-title").textContent = song.title;
+        li.querySelector(".song-artist").textContent = song.artist || "";
+        if (song.filename === currentFilename) li.classList.add("active");
+
+        const checkbox = li.querySelector("input");
+        checkbox.checked = cart.includes(song.filename);
+        checkbox.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleCart(song.filename, checkbox.checked);
+        });
+
+        li.querySelector(".song-text").addEventListener("click", () => loadSong(song.filename));
+        songList.appendChild(li);
+      }
     }
-    for (const song of songs) {
-      const li = document.createElement("li");
-      li.dataset.filename = song.filename;
-      li.innerHTML = `<div class="song-title"></div><div class="song-artist"></div>`;
-      li.querySelector(".song-title").textContent = song.title;
-      li.querySelector(".song-artist").textContent = song.artist || "";
-      if (song.filename === currentFilename) li.classList.add("active");
-      li.addEventListener("click", () => loadSong(song.filename));
-      songList.appendChild(li);
-    }
+    renderCart();
   } catch (e) {
     songList.innerHTML = '<li class="empty">Fehler beim Laden</li>';
   }
+}
+
+function toggleCart(filename, add) {
+  if (add && !cart.includes(filename)) {
+    cart.push(filename);
+  } else if (!add) {
+    cart = cart.filter(f => f !== filename);
+  }
+  saveCart();
+  renderCart();
+}
+
+function moveCartItem(index, delta) {
+  const target = index + delta;
+  if (target < 0 || target >= cart.length) return;
+  [cart[index], cart[target]] = [cart[target], cart[index]];
+  saveCart();
+  renderCart();
+}
+
+function renderCart() {
+  cartList.innerHTML = "";
+  cartCount.textContent = cart.length ? `(${cart.length})` : "";
+  cartEmpty.style.display = cart.length ? "none" : "block";
+  renderBookBtn.disabled = cart.length === 0;
+
+  cart.forEach((filename, i) => {
+    const song = songsByFilename[filename];
+    const li = document.createElement("li");
+    const title = song ? song.title : filename;
+    li.innerHTML = `
+      <span class="cart-title" title="${title}"></span>
+      <button class="cart-up" title="nach oben">↑</button>
+      <button class="cart-down" title="nach unten">↓</button>
+      <button class="cart-remove" title="entfernen">✕</button>`;
+    li.querySelector(".cart-title").textContent = title;
+    li.querySelector(".cart-up").disabled = i === 0;
+    li.querySelector(".cart-down").disabled = i === cart.length - 1;
+    li.querySelector(".cart-up").addEventListener("click", () => moveCartItem(i, -1));
+    li.querySelector(".cart-down").addEventListener("click", () => moveCartItem(i, 1));
+    li.querySelector(".cart-remove").addEventListener("click", () => {
+      toggleCart(filename, false);
+      // Checkbox im song-list synchron halten
+      const listItem = songList.querySelector(`li[data-filename="${CSS.escape(filename)}"]`);
+      if (listItem) listItem.querySelector("input").checked = false;
+    });
+    cartList.appendChild(li);
+  });
 }
 
 async function loadSong(filename) {
@@ -259,6 +403,40 @@ saveBtn.addEventListener("click", async () => {
     loadSongList();
   } catch (e) {
     setSaveStatus("Netzwerkfehler", true);
+  }
+});
+
+renderBookBtn.addEventListener("click", async () => {
+  renderBookBtn.disabled = true;
+  setBookStatus(`rendere Buch (${cart.length} Songs)...`, false);
+  try {
+    const res = await fetch("/api/render-book", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filenames: cart }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      setBookStatus(err.error || "Fehler beim Rendern", true);
+      return;
+    }
+
+    const skippedHeader = res.headers.get("X-Skipped-Songs");
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+
+    if (skippedHeader) {
+      const skipped = JSON.parse(skippedHeader);
+      setBookStatus(`Buch offen. Übersprungen (Parse-Fehler): ${skipped.join(", ")}`, true);
+    } else {
+      setBookStatus("Buch in neuem Tab geöffnet.", false);
+    }
+  } catch (e) {
+    setBookStatus("Netzwerkfehler: " + e, true);
+  } finally {
+    renderBookBtn.disabled = cart.length === 0;
   }
 });
 

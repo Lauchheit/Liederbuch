@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import subprocess
@@ -52,19 +53,8 @@ def extract_meta(page) -> tuple[str, str | None]:
     return title, artist
 
 
-class RenderRequest(BaseModel):
-    content: str
-
-
-@app.post("/api/render")
-def render(req: RenderRequest):
-    try:
-        cst = grammar.cst(req.content, start="page")
-        page = CordaTransformer().transform(cst)
-    except Exception as e:
-        return JSONResponse(status_code=400, content={"error": f"Parse-Fehler: {e}"})
-
-    ast = Book(pages=[page])
+def compile_pdf(ast: Book, timeout: int = 30) -> Response | JSONResponse:
+    """Rendert ein Book-AST zu LaTeX, kompiliert es und gibt eine Response zurueck."""
     style = Style.from_xml(STYLE_PATH)
     output = LaTeXRenderer(style).render_document(ast)
 
@@ -79,7 +69,7 @@ def render(req: RenderRequest):
                 cwd=tmpdir,
                 check=True,
                 capture_output=True,
-                timeout=30,
+                timeout=timeout,
             )
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
             log = getattr(e, "stdout", b"") or b""
@@ -91,6 +81,21 @@ def render(req: RenderRequest):
 
         pdf_bytes = (tmp / "output.pdf").read_bytes()
         return Response(content=pdf_bytes, media_type="application/pdf")
+
+
+class RenderRequest(BaseModel):
+    content: str
+
+
+@app.post("/api/render")
+def render(req: RenderRequest):
+    try:
+        cst = grammar.cst(req.content, start="page")
+        page = CordaTransformer().transform(cst)
+    except Exception as e:
+        return JSONResponse(status_code=400, content={"error": f"Parse-Fehler: {e}"})
+
+    return compile_pdf(Book(pages=[page]))
 
 
 @app.get("/api/songs")
@@ -151,6 +156,33 @@ def save_song(req: SaveRequest):
 
     (DATA_DIR / filename).write_text(req.content, encoding="utf-8")
     return {"filename": filename}
+
+
+class RenderBookRequest(BaseModel):
+    filenames: list[str]  # Reihenfolge = Reihenfolge im Buch
+
+
+@app.post("/api/render-book")
+def render_book(req: RenderBookRequest):
+    pages = []
+    skipped = []
+    for raw_name in req.filenames:
+        try:
+            path = DATA_DIR / safe_filename(raw_name)
+            content = path.read_text(encoding="utf-8")
+            cst = grammar.cst(content, start="page")
+            pages.append(CordaTransformer().transform(cst))
+        except Exception:
+            traceback.print_exc()
+            skipped.append(raw_name)
+
+    if not pages:
+        return JSONResponse(status_code=400, content={"error": "Keine der ausgewaehlten Songs konnte gerendert werden."})
+
+    result = compile_pdf(Book(pages=pages), timeout=120)
+    if not isinstance(result, JSONResponse) and skipped:
+        result.headers["X-Skipped-Songs"] = json.dumps(skipped)
+    return result
 
 
 app.mount("/", StaticFiles(directory="server/static", html=True), name="static")
