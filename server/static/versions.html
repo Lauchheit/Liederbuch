@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corda – Versionen</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+<div id="page-body">
+  <div id="song-browser">
+    <h1 id="versions-heading">Versionen</h1>
+    <p id="versions-back"><a href="index.html">&larr; zurück zu Songs durchstöbern</a></p>
+    <ul id="versions-list" class="song-row-list"><li class="empty">lade...</li></ul>
+  </div>
+  <div id="cart-widget" class="cart-panel"></div>
+</div>
+
+<script src="common.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const songTitle = params.get("title") || "";
+const songArtist = params.get("artist") || "";
+
+document.getElementById("versions-heading").textContent = `Versionen von „${songTitle}“`;
+
+async function loadVersions() {
+  const listEl = document.getElementById("versions-list");
+  try {
+    const res = await apiFetch(
+      `/api/song-versions?title=${encodeURIComponent(songTitle)}&artist=${encodeURIComponent(songArtist)}`
+    );
+    if (!res.ok) {
+      listEl.innerHTML = '<li class="empty">Fehler beim Laden</li>';
+      return;
+    }
+    const versions = await res.json();
+    renderVersions(versions);
+  } catch (e) {
+    // 401 wird schon von apiFetch behandelt
+  }
+}
+
+function renderVersions(versions) {
+  const listEl = document.getElementById("versions-list");
+  listEl.innerHTML = "";
+  if (versions.length === 0) {
+    listEl.innerHTML = '<li class="empty">Keine Versionen gefunden</li>';
+    return;
+  }
+
+  for (const version of versions) {
+    const li = document.createElement("li");
+    li.dataset.id = version.id;
+    li.innerHTML = `
+      <div class="vote-box">
+        <button class="vote-btn vote-up" title="Upvote">▲</button>
+        <span class="vote-score"></span>
+        <button class="vote-btn vote-down" title="Downvote">▼</button>
+      </div>
+      <div class="song-text">
+        <div class="song-title"></div>
+        <div class="song-artist"></div>
+      </div>
+      <button class="preview-btn">Vorschau</button>
+      <button class="add-book-btn">+ Liederbuch</button>
+      <button class="edit-btn">Bearbeiten</button>`;
+
+    const titleText = version.subtitle ? `${version.title} – ${version.subtitle}` : version.title;
+    li.querySelector(".song-title").textContent = titleText;
+    li.querySelector(".song-artist").textContent = [version.artist, `von ${version.owner}`].filter(Boolean).join(" · ");
+
+    updateVoteUi(li, version);
+
+    li.querySelector(".vote-up").addEventListener("click", () => vote(version.id, 1, li));
+    li.querySelector(".vote-down").addEventListener("click", () => vote(version.id, -1, li));
+    li.querySelector(".preview-btn").addEventListener("click", () => previewVersion(version.id, titleText));
+    li.querySelector(".add-book-btn").addEventListener("click", (e) => openBookPicker(version, e.currentTarget));
+    li.querySelector(".edit-btn").addEventListener("click", () => editVersion(version));
+
+    listEl.appendChild(li);
+  }
+}
+
+function updateVoteUi(li, data) {
+  li.querySelector(".vote-score").textContent = data.score;
+  li.querySelector(".vote-up").classList.toggle("active", data.my_vote === 1);
+  li.querySelector(".vote-down").classList.toggle("active", data.my_vote === -1);
+  li.title = `${data.upvotes} Upvotes, ${data.downvotes} Downvotes, ${data.book_saves}× von anderen ins Liederbuch gespeichert`;
+}
+
+async function vote(songId, value, li) {
+  try {
+    const res = await apiFetch(`/api/songs/${songId}/vote`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ value }),
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    updateVoteUi(li, data);
+  } catch (e) {
+    // 401 -> Auth-Overlay wurde schon gezeigt
+  }
+}
+
+async function previewVersion(id, title) {
+  try {
+    const res = await apiFetch("/api/render-book", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ song_ids: [id] }),
+    });
+    if (!res.ok) return;
+    const blob = await res.blob();
+    showPdfOverlay(blob, title);
+  } catch (e) {
+    // 401 -> Auth-Overlay wurde schon gezeigt
+  }
+}
+
+async function editVersion(version) {
+  if (version.is_mine) {
+    location.href = `editor.html?id=${version.id}`;
+    return;
+  }
+  // Fremde Version: als eigene, unveröffentlichte Kopie anlegen, Original bleibt unberührt.
+  try {
+    const res = await apiFetch(`/api/songs/${version.id}/fork`, { method: "POST" });
+    if (!res.ok) return;
+    const data = await res.json();
+    location.href = `editor.html?id=${data.id}`;
+  } catch (e) {
+    // 401 -> Auth-Overlay wurde schon gezeigt
+  }
+}
+
+initAuth(() => {
+  loadVersions();
+  loadBooks();
+});
+</script>
+</body>
+</html>

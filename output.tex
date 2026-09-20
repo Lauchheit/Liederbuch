@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+\renewcommand{\contentsname}{Inhaltsverzeichnis}
 
 \usepackage{xcolor}
 \usepackage{multicol}
@@ -35,6 +36,12 @@
   \color{lyriccolor}\normalsize\mdseries #1%
 }
 
+% Reine Akkordzeile (z.B. Intro-/Interlude-Riff ohne Text): analog zu \lyricline
+% kompakt, ohne die für Silben-Text reservierte zweite Zeile.
+\newcommand{\chordline}[1]{%
+  \color{chordcolor}\small\bfseries #1%
+}
+
 % Dezentes Strophenlabel (z.B. "Refrain", "Strophe 1")
 \newcommand{\paragraphtitle}[1]{%
   \noindent{\color{titlecolor}\footnotesize\mdseries\scshape #1}\\[0.3em]%
@@ -53,12 +60,31 @@
 \definecolor{metaInstructioncolor}{HTML}{8A8A8A}
 \newcommand{\metaInstruction}[1]{\noindent{\color{metaInstructioncolor}\footnotesize\mdseries\scshape #1}\\}
 
+% Kurze Songs nicht künstlich auf 2 Spalten balancieren (siehe
+% Kommentar in transformer/style.py): Inhalt wird bei Spaltenbreite vorab in eine
+% Box gemessen - passt er in eine Spaltenhöhe, bleibt es einspaltig, sonst echt
+% mehrspaltig.
+\newsavebox{\cordaMeasureBox}
+\newlength{\cordaColWidth}
+\setlength{\cordaColWidth}{\dimexpr(\textwidth-1\columnsep)/2\relax}
+
+\newcommand{\cordaSongLayout}[1]{%
+  \sbox{\cordaMeasureBox}{\begin{minipage}[t]{\cordaColWidth}\raggedright\setlength{\parskip}{1.5em}#1\end{minipage}}%
+  \ifdim\dimexpr\ht\cordaMeasureBox+\dp\cordaMeasureBox\relax>\textheight
+    \begin{multicols}{2}#1\end{multicols}%
+  \else
+    \usebox{\cordaMeasureBox}%
+  \fi
+}
+
 \begin{document}
+\tableofcontents
+\newpage
+\addcontentsline{toc}{section}{As The World Caves In}
 \metaTitle{As The World Caves In}
 \metaArtist{Matt Maltese}
-
-\begin{multicols}{2}
-\begin{minipage}{\linewidth}
+\strut\par
+\cordaSongLayout{\begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Verse 1}
 \noindent \cw{}{My} \cw{B}{feet} \cw{}{are} \cw{}{aching}\\
@@ -126,14 +152,13 @@
 \noindent \cw{}{Yes,} \cw{}{it's} \cw{Eb7}{you} \cw{}{I} \cw{}{welcome} \cw{Ebm6}{death} \cw{}{with}\\
 \noindent \cw{}{As} \cw{}{the} \cw{B}{world,} \cw{}{as} \cw{}{the} \cw{D7}{world} \cw{}{caves} \cw{}{in}\\
 \end{minipage}
-
-\end{multicols}
+}
 \newpage
+\addcontentsline{toc}{section}{Fürstenfeld}
 \metaTitle{Fürstenfeld}
 \metaArtist{STS}
-
-\begin{multicols}{2}
-\begin{minipage}{\linewidth}
+\strut\par
+\cordaSongLayout{\begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Intro}
 \noindent \cw{G}{Langsam} \cw{}{find't} \cw{}{der} \cw{D}{Tag} \cw{}{sei} \cw{}{End}\\
@@ -163,7 +188,7 @@
 \begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Interlude}
-\noindent \cw{G}{}\\
+\noindent \chordline{G}\\
 \end{minipage}
 
 
@@ -189,11 +214,11 @@
 \begin{minipage}{\linewidth}
 \raggedright
 \noindent \cw{D}{} \cw{}{Da} \cw{}{geht} \cw{}{den} \cw{C}{ganzen} \cw{}{Tag} \cw{}{der} \cw{G}{Wind}\\
-\noindent \cw{C/G}{}\cw{G}{}\cw{D}{}\\
+\noindent \chordline{C/G G D}\\
 \noindent \cw{}{Nix} \cw{}{ois} \cw{C}{Baustelln} \cw{}{das} \cw{}{ka} \cw{G}{Mensch} \cw{}{wos} \cw{}{find}\\
-\noindent \cw{C/G}{}\cw{G}{}\\
+\noindent \chordline{C/G G}\\
 \noindent \cw{D}{} \cw{}{Die} \cw{}{Buren-}\cw{C}{häut'ln} \cw{}{san} \cw{}{ein} \cw{G}{Graus}\\
-\noindent \cw{C/G}{}\cw{G}{}\cw{D}{}\\
+\noindent \chordline{C/G G D}\\
 \noindent \cw{}{Und} \cw{}{im} \cw{}{Ka--}\cw{D}{ffeehaus} \cw{}{brennst} \cw{}{di} \cw{G}{aus}\\
 \end{minipage}
 
@@ -236,10 +261,10 @@
 \begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Interlude}
-\noindent \cw{D}{}\cw{C}{}\cw{G}{}\\
-\noindent \cw{D}{}\cw{C}{}\cw{G}{}\\
-\noindent \cw{D}{}\cw{C}{}\cw{G}{}\\
-\noindent \cw{C}{}\cw{D}{}\cw{G}{}\\
+\noindent \chordline{D C G}\\
+\noindent \chordline{D C G}\\
+\noindent \chordline{D C G}\\
+\noindent \chordline{C D G}\\
 \end{minipage}
 
 
@@ -266,16 +291,15 @@
 \begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Outro}
-\noindent \cw{D}{}\cw{G}{}\\
+\noindent \chordline{D G}\\
 \end{minipage}
-
-\end{multicols}
+}
 \newpage
+\addcontentsline{toc}{section}{Hey Jude}
 \metaTitle{Hey Jude}
 \metaArtist{The Beatles}
-
-\begin{multicols}{2}
-\begin{minipage}{\linewidth}
+\strut\par
+\cordaSongLayout{\begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Verse 1}
 \noindent \cw{F}{Hey} \cw{}{Jude,} \cw{G}{don't} \cw{}{make} \cw{}{it} \cw{C}{bad}\\
@@ -376,18 +400,17 @@
 \noindent \cw{F}{Na-na-na-na-na-na-na-na-na-na,}\\
 \noindent \cw{C}{yeah,} \cw{G}{hey} \cw{}{Jude}\\
 \end{minipage}
-
-\end{multicols}
+}
 \newpage
+\addcontentsline{toc}{section}{House of the Rising Sun}
 \metaTitle{House of the Rising Sun}
 \metaArtist{Traditional The Animals' Version}
-
-\begin{multicols}{2}
-\begin{minipage}{\linewidth}
+\strut\par
+\cordaSongLayout{\begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Intro}
-\noindent \cw{Am}{} \cw{C}{} \cw{D}{} \cw{F}{}\\
-\noindent \cw{Am}{} \cw{E}{} \cw{Am}{} \cw{E}{}\\
+\noindent \chordline{Am C D F}\\
+\noindent \chordline{Am E Am E}\\
 \end{minipage}
 
 
@@ -404,7 +427,7 @@
 \begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Interlude}
-\noindent \cw{C}{} \cw{D}{} \cw{F}{} \cw{Am}{} \cw{E}{} \cw{Am}{} \cw{E}{}\\
+\noindent \chordline{C D F Am E Am E}\\
 \end{minipage}
 
 
@@ -461,16 +484,15 @@
 \begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Outro Fade out}
-\noindent \cw{Am}{} \cw{Dm}{} \cw{Am}{} \cw{Dm}{}\\
+\noindent \chordline{Am Dm Am Dm}\\
 \end{minipage}
-
-\end{multicols}
+}
 \newpage
+\addcontentsline{toc}{section}{Scarborough Fair}
 \metaTitle{Scarborough Fair}
 \metaArtist{Simon and Garfunkel}
-
-\begin{multicols}{2}
-\begin{minipage}{\linewidth}
+\strut\par
+\cordaSongLayout{\begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Both}
 \noindent \cw{Am}{Are} \cw{}{you} \cw{}{going} \cw{}{to} \cw{G}{Scarborough} \cw{Am}{Fair?}\\
@@ -581,17 +603,16 @@
 \noindent \lyricline{But none more than any heart would ask}\\
 \noindent \lyricline{I must know you're a true love of mine}\\
 \end{minipage}
-
-\end{multicols}
+}
 \newpage
+\addcontentsline{toc}{section}{Smile}
 \metaTitle{Smile}
 \metaArtist{David Gilmour}
-
-\begin{multicols}{2}
-\begin{minipage}{\linewidth}
+\strut\par
+\cordaSongLayout{\begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Intro 2x}
-\noindent \cw{C}{}\cw{CM7}{}\cw{Am}{}\cw{CM7}{}\\
+\noindent \chordline{C CM7 Am CM7}\\
 \end{minipage}
 
 
@@ -656,17 +677,16 @@
 \noindent \lyricline{to find my home to your}\\
 \noindent \lyricline{smile}\\
 \end{minipage}
-
-\end{multicols}
+}
 \newpage
+\addcontentsline{toc}{section}{Soldier of Fortune}
 \metaTitle{Soldier of Fortune}
 \metaArtist{Deep Purple}
-
-\begin{multicols}{2}
-\begin{minipage}{\linewidth}
+\strut\par
+\cordaSongLayout{\begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Intro}
-\noindent \cw{Gm}{}\cw{Dm}{}\cw{C}{}\cw{Gm}{}\\
+\noindent \chordline{Gm Dm C Gm}\\
 \end{minipage}
 
 
@@ -729,17 +749,16 @@
 \noindent \cw{}{I} \cw{Eb}{guess} \cw{}{I'll} \cw{}{always} \cw{}{be}\cw{Dm7}{}\\
 \noindent \cw{}{A} \cw{}{soldier} \cw{}{of} \cw{}{for-}\cw{G}{tune}\\
 \end{minipage}
-
-\end{multicols}
+}
 \newpage
+\addcontentsline{toc}{section}{Zeit}
 \metaTitle{Zeit}
 \metaArtist{Rammstein}
-
-\begin{multicols}{2}
-\begin{minipage}{\linewidth}
+\strut\par
+\cordaSongLayout{\begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Intro}
-\noindent \cw{Gm}{}\cw{D/F\#}{}\cw{Eb}{}\cw{Dm}{}\cw{2x}{}\\
+\noindent \chordline{Gm D/F\# Eb Dm 2x}\\
 \end{minipage}
 
 
@@ -781,7 +800,7 @@
 \begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Interlude}
-\noindent \cw{Gm}{}\cw{D/F\#}{}\cw{Eb}{}\cw{Dm}{}\\
+\noindent \chordline{Gm D/F\# Eb Dm}\\
 \end{minipage}
 
 
@@ -813,7 +832,7 @@
 \begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Interlude}
-\noindent \cw{Gm}{}\cw{Bb}{}\cw{F}{}\cw{2x}{}\\
+\noindent \chordline{Gm Bb F 2x}\\
 \noindent \cw{Eb}{Zeit,} \cw{}{bitte} \cw{}{bleib} \cw{Bb}{stehen,} \cw{}{bleib} \cw{F}{stehen}\\
 \end{minipage}
 
@@ -846,19 +865,18 @@
 \begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Outro}
-\noindent \cw{Gm}{}\cw{Dsus4}{}\cw{D}{}\cw{Eb}{}\cw{Dsus4}{}\cw{D}{}\cw{Gm}{}\\
+\noindent \chordline{Gm Dsus4 D Eb Dsus4 D Gm}\\
 \end{minipage}
-
-\end{multicols}
+}
 \newpage
+\addcontentsline{toc}{section}{Zombie}
 \metaTitle{Zombie}
 \metaArtist{The Cranbarries}
-
-\begin{multicols}{2}
-\begin{minipage}{\linewidth}
+\strut\par
+\cordaSongLayout{\begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Intro 4x}
-\noindent \cw{Em}{}\cw{C}{}\cw{G}{}\cw{D/F\#}{}\\
+\noindent \chordline{Em C G D/F\#}\\
 \end{minipage}
 
 
@@ -891,7 +909,7 @@
 \begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Instrumental + "do do..."}
-\noindent \cw{Em}{}\cw{C}{}\cw{G}{}\cw{D/F}{}\cw{x2}{}\\
+\noindent \chordline{Em C G D/F x2}\\
 \end{minipage}
 
 
@@ -923,31 +941,30 @@
 \begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Instrumental + "do do..."}
-\noindent \cw{Em}{}\cw{C}{}\cw{G}{}\cw{D/F}{}\cw{x2}{}\\
-\noindent \cw{Em}{}\cw{C}{}\cw{Em}{}\cw{C}{}\cw{x2}{}\\
+\noindent \chordline{Em C G D/F x2}\\
+\noindent \chordline{Em C Em C x2}\\
 \end{minipage}
 
 
 \begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Solo}
-\noindent \cw{Em}{}\cw{C}{}\cw{G}{}\cw{D/F\#}{}\cw{x3}{}\\
+\noindent \chordline{Em C G D/F\# x3}\\
 \end{minipage}
 
 
 \begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Outro}
-\noindent \cw{Em}{}\cw{C}{}\cw{Em}{}\cw{C}{}\\
-\noindent \cw{Em}{}\cw{C}{}\cw{Em}{}\\
+\noindent \chordline{Em C Em C}\\
+\noindent \chordline{Em C Em}\\
 \end{minipage}
-
-\end{multicols}
+}
 \newpage
+\addcontentsline{toc}{section}{Piano Man}
 \metaTitle{Piano Man}
-
-\begin{multicols}{2}
-\begin{minipage}{\linewidth}
+\strut\par
+\cordaSongLayout{\begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Intro}
 \noindent \lyricline{Long Harmonica, Piano Interlude}\\
@@ -1102,14 +1119,13 @@
 \raggedright
 \paragraphtitle{Short Harmonica, Piano Interlude}
 \end{minipage}
-
-\end{multicols}
+}
 \newpage
+\addcontentsline{toc}{section}{Smile}
 \metaTitle{Smile}
 \metaArtist{David Gilmour}
-
-\begin{multicols}{2}
-\begin{minipage}{\linewidth}
+\strut\par
+\cordaSongLayout{\begin{minipage}{\linewidth}
 \raggedright
 \paragraphtitle{Verse 1}
 \noindent \cw{}{To} \cw{C}{make} \cw{}{it} \cw{}{all} \cw{CM7}{right}\\
@@ -1120,6 +1136,5 @@
 \raggedright
 \noindent \cw{C}{make} \cw{}{it} \cw{}{all} \cw{CM7}{right}\\
 \end{minipage}
-
-\end{multicols}
+}
 \end{document}

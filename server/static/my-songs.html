@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corda – Eigene Songs</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+<div id="page-body">
+  <div id="song-browser">
+    <h1>Eigene Songs</h1>
+    <div id="my-songs-toolbar">
+      <input type="search" id="song-search" class="song-search" placeholder="Suche nach Titel oder Interpret...">
+      <button id="import-btn">Importieren</button>
+      <input type="file" id="import-input" accept=".corda" multiple hidden>
+    </div>
+    <div id="import-status"></div>
+    <ul id="my-song-list" class="song-row-list"><li class="empty">lade...</li></ul>
+  </div>
+  <div id="cart-widget" class="cart-panel"></div>
+</div>
+
+<script src="common.js"></script>
+<script>
+let mySongs = [];
+
+async function loadMySongs() {
+  const listEl = document.getElementById("my-song-list");
+  try {
+    const res = await apiFetch("/api/my-songs");
+    if (!res.ok) {
+      listEl.innerHTML = '<li class="empty">Fehler beim Laden</li>';
+      return;
+    }
+    mySongs = await res.json();
+    renderMySongList();
+  } catch (e) {
+    // 401 wird schon von apiFetch behandelt
+  }
+}
+
+function renderMySongList() {
+  const listEl = document.getElementById("my-song-list");
+  const query = document.getElementById("song-search").value.trim().toLowerCase();
+  const filtered = mySongs.filter((song) => {
+    if (!query) return true;
+    return song.title.toLowerCase().includes(query) || (song.artist || "").toLowerCase().includes(query);
+  });
+
+  listEl.innerHTML = "";
+  if (mySongs.length === 0) {
+    listEl.innerHTML = '<li class="empty">Noch keine eigenen Songs. Leg einen im Editor an.</li>';
+    return;
+  }
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<li class="empty">Keine Treffer</li>';
+    return;
+  }
+
+  for (const song of filtered) {
+    const li = document.createElement("li");
+    li.dataset.id = song.id;
+    li.innerHTML = `
+      <div class="song-text clickable">
+        <div class="song-title"></div>
+        <div class="song-artist"></div>
+      </div>
+      <span class="badge"></span>
+      <a class="btn-link edit-link">Bearbeiten</a>
+      <button class="publish-toggle"></button>
+      <button class="add-book-btn">+ Liederbuch</button>
+      <button class="preview-btn">Vorschau</button>`;
+    li.querySelector(".song-title").textContent = song.title;
+    li.querySelector(".song-artist").textContent = song.artist || "";
+    li.querySelector(".edit-link").href = `editor.html?id=${song.id}`;
+
+    const badge = li.querySelector(".badge");
+    badge.textContent = song.published ? "veröffentlicht" : "Entwurf";
+    badge.classList.toggle("published", song.published);
+
+    const publishBtn = li.querySelector(".publish-toggle");
+    publishBtn.textContent = song.published ? "Zurückziehen" : "Veröffentlichen";
+    publishBtn.addEventListener("click", () => togglePublish(song));
+
+    li.querySelector(".add-book-btn").addEventListener("click", (e) => openBookPicker(song, e.currentTarget));
+    li.querySelector(".preview-btn").addEventListener("click", () => previewSong(song.id, song.title));
+    li.querySelector(".song-text").addEventListener("click", () => previewSong(song.id, song.title));
+
+    listEl.appendChild(li);
+  }
+}
+
+async function previewSong(id, title) {
+  try {
+    const res = await apiFetch("/api/render-book", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ song_ids: [id] }),
+    });
+    if (!res.ok) return;
+    const blob = await res.blob();
+    showPdfOverlay(blob, title);
+  } catch (e) {
+    // 401 -> Auth-Overlay wurde schon gezeigt
+  }
+}
+
+async function togglePublish(song) {
+  const endpoint = song.published ? "unpublish" : "publish";
+  try {
+    const res = await apiFetch(`/api/my-songs/${song.id}/${endpoint}`, { method: "POST" });
+    if (res.ok) loadMySongs();
+  } catch (e) {
+    // 401 wird schon von apiFetch behandelt
+  }
+}
+
+async function importFiles() {
+  const importInput = document.getElementById("import-input");
+  const importStatus = document.getElementById("import-status");
+  const files = [...importInput.files];
+  importInput.value = ""; // erlaubt erneuten Import derselben Datei(en)
+  if (files.length === 0) return;
+
+  importStatus.className = "";
+  let ok = 0;
+  const failed = [];
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    importStatus.textContent = `Importiere ${i + 1} / ${files.length}...`;
+    try {
+      const content = await file.text();
+      const res = await apiFetch("/api/my-songs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      if (res.ok) {
+        ok++;
+      } else {
+        const data = await res.json();
+        failed.push(`${file.name}: ${data.error || "Fehler"}`);
+      }
+    } catch (e) {
+      if (e.message === "unauthorized") {
+        failed.push(`${file.name}: nicht eingeloggt`);
+        break;
+      }
+      failed.push(`${file.name}: Netzwerkfehler`);
+    }
+  }
+
+  if (failed.length === 0) {
+    importStatus.textContent = `${ok} Song${ok === 1 ? "" : "s"} importiert.`;
+  } else {
+    importStatus.textContent = `${ok} importiert, ${failed.length} fehlgeschlagen: ${failed.join(" · ")}`;
+    importStatus.className = "error";
+  }
+  loadMySongs();
+}
+
+document.getElementById("import-btn").addEventListener("click", () => {
+  document.getElementById("import-input").click();
+});
+document.getElementById("import-input").addEventListener("change", importFiles);
+
+document.getElementById("song-search").addEventListener("input", renderMySongList);
+
+initAuth(() => {
+  loadMySongs();
+  loadBooks();
+});
+</script>
+</body>
+</html>

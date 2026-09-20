@@ -1,0 +1,11 @@
+\contentsline {section}{As The World Caves In}{2}{}%
+\contentsline {section}{Fürstenfeld}{3}{}%
+\contentsline {section}{Hey Jude}{5}{}%
+\contentsline {section}{House of the Rising Sun}{6}{}%
+\contentsline {section}{Scarborough Fair}{7}{}%
+\contentsline {section}{Smile}{8}{}%
+\contentsline {section}{Soldier of Fortune}{9}{}%
+\contentsline {section}{Zeit}{10}{}%
+\contentsline {section}{Zombie}{11}{}%
+\contentsline {section}{Piano Man}{12}{}%
+\contentsline {section}{Smile}{13}{}%

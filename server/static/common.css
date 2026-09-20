@@ -1,0 +1,614 @@
+:root {
+  --accent: #2E86AB;
+  --accent-dark: #256a87;
+  --accent-soft: #eaf4f9;
+  --bg: #f7f8f9;
+  --surface: #ffffff;
+  --border: #e2e5e8;
+  --text: #1e1e1e;
+  --text-muted: #6b6b6b;
+  --text-faint: #97a0a6;
+  --danger: #b23b3b;
+  --danger-soft: #fbebeb;
+  --success: #2f8f4e;
+  --success-soft: #e7f6ec;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow-sm: 0 1px 2px rgba(20, 20, 30, 0.05), 0 1px 1px rgba(20, 20, 30, 0.04);
+  --shadow-md: 0 8px 24px rgba(20, 20, 30, 0.12);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a { color: var(--accent); }
+
+/* ---------- Top-Nav ---------- */
+#topnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  font-size: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  flex-wrap: wrap;
+}
+#topnav-left { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+#topnav-left a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 4px 2px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+#topnav-left a:hover { color: var(--text); }
+#topnav-left a.new-song-link { color: var(--accent); }
+#topnav-left a.new-song-link:hover { color: var(--accent-dark); }
+#topnav-right { display: flex; align-items: center; gap: 14px; font-size: 13px; color: var(--text-muted); }
+#current-username { font-weight: 600; color: var(--text); }
+#logout-btn {
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+}
+#logout-btn:hover { color: var(--danger); }
+
+/* height (nicht min-height!): editor.html braucht eine definierte Hoehe hier,
+   damit die height:100%-Kette zu #editor-layout/#editor-pane/#preview-pane
+   funktioniert - CSS-Prozenthoehen loesen sich nur gegen eine explizit
+   definierte Elternhoehe auf, min-height zaehlt dafuer nicht. Lange Songlisten
+   scrollen trotzdem sauber, weil #song-browser selbst overflow-y:auto hat. */
+#page-body { height: calc(100vh - 53px); display: flex; }
+
+/* ---------- Buttons (Grundstil fuer alle Seiten) ---------- */
+button, .btn-link {
+  font-family: inherit;
+}
+
+/* ---------- Auth overlay ---------- */
+#auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 22, 26, 0.6);
+  backdrop-filter: blur(2px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+#auth-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 32px 28px 22px;
+  width: 320px;
+  max-width: 100%;
+  box-shadow: var(--shadow-md);
+}
+#auth-card h1 { font-size: 19px; margin: 0 0 20px; text-align: center; }
+.auth-form { display: flex; flex-direction: column; gap: 10px; }
+.auth-form input {
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+.auth-form input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--surface);
+}
+.auth-form button {
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 4px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  transition: background 0.15s;
+}
+.auth-form button:hover { background: var(--accent-dark); }
+#auth-switch { text-align: center; font-size: 12px; margin-top: 16px; color: var(--text-muted); }
+#auth-switch a { color: var(--accent); cursor: pointer; }
+#auth-error { color: var(--danger); font-size: 12px; min-height: 14px; text-align: center; }
+
+/* ---------- Song-Browser (Home / Eigene Songs / Versionen) ---------- */
+/* Ueberschrift/Suche bleiben fix, nur die Liste selbst scrollt (statt der
+   ganzen Seite) - deshalb #song-browser als Flex-Spalte mit eigenem
+   overflow:hidden und .song-row-list als der eigentliche Scroll-Container. */
+#song-browser {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 20px 24px;
+}
+#song-browser h1 { font-size: 19px; margin: 0 0 14px; flex-shrink: 0; }
+#versions-back { margin: 0 0 16px; font-size: 13px; flex-shrink: 0; }
+#versions-back a { text-decoration: none; color: var(--text-muted); }
+#versions-back a:hover { color: var(--accent); }
+
+.song-search {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  padding: 9px 12px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+.song-search:focus { outline: none; border-color: var(--accent); }
+
+#my-songs-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+#my-songs-toolbar .song-search { flex: 1; min-width: 200px; margin-bottom: 0; }
+#import-btn {
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+#import-btn:hover { background: var(--bg); }
+#import-status { font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px; min-height: 16px; flex-shrink: 0; }
+#import-status.error { color: var(--danger); }
+
+.song-row-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 2px 4px 0; /* rechts/unten etwas Luft, damit der Card-Schatten nicht abgeschnitten wird */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.song-row-list li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+.song-row-list li:hover { box-shadow: var(--shadow-sm); border-color: #d5dade; }
+.song-row-list .song-text { flex: 1; min-width: 140px; }
+.song-row-list .song-title,
+.song-row-list .song-artist {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.song-row-list .song-title { font-weight: 600; font-size: 14px; }
+.song-row-list .song-artist { color: var(--text-muted); font-size: 12.5px; margin-top: 1px; }
+.song-row-list .song-text.clickable { cursor: pointer; border-radius: var(--radius-sm); margin: -4px -6px; padding: 4px 6px; }
+.song-row-list .song-text.clickable:hover .song-title { color: var(--accent); }
+.song-row-list .empty {
+  color: var(--text-faint);
+  padding: 20px 14px;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.vote-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  flex-shrink: 0;
+  width: 28px;
+}
+.vote-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1;
+  padding: 3px;
+  color: var(--text-faint);
+}
+.vote-btn:hover { color: var(--text-muted); }
+.vote-btn.vote-up.active { color: var(--success); }
+.vote-btn.vote-down.active { color: var(--danger); }
+.vote-score { font-size: 12px; font-weight: 700; color: var(--text); }
+
+.song-row-list .badge {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: var(--bg);
+  color: var(--text-muted);
+  flex-shrink: 0;
+  font-weight: 600;
+}
+.song-row-list .badge.published { background: var(--success-soft); color: var(--success); }
+
+.song-row-list button, .song-row-list a.btn-link {
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--text);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+.song-row-list button:hover, .song-row-list a.btn-link:hover { background: var(--bg); border-color: #d5dade; }
+.song-row-list .versions-link,
+.song-row-list .preview-btn {
+  color: var(--accent);
+  border-color: var(--accent-soft);
+  background: var(--accent-soft);
+}
+.song-row-list .versions-link:hover,
+.song-row-list .preview-btn:hover { background: #dcedf4; }
+
+/* ---------- "Zu Liederbuch hinzufügen"-Popover ---------- */
+#book-picker {
+  position: fixed;
+  width: 240px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  z-index: 50;
+  font-size: 13px;
+  overflow: hidden;
+}
+.book-picker-title {
+  padding: 10px 12px;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+.book-picker-list { max-height: 220px; overflow-y: auto; }
+.book-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.book-picker-row:hover { background: var(--bg); }
+.book-picker-empty { padding: 12px; color: var(--text-faint); font-size: 12px; }
+.book-picker-new {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  border-top: 1px solid var(--border);
+}
+.book-picker-new input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.book-picker-new input:focus { outline: none; border-color: var(--accent); }
+.book-picker-new button {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--radius-sm);
+}
+.book-picker-new button:hover { background: var(--accent-dark); }
+
+/* ---------- Liederbuch-Widget ---------- */
+.cart-panel {
+  width: 280px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+.cart-panel h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  margin: 0;
+  padding: 16px 16px 8px;
+  display: flex;
+  justify-content: space-between;
+}
+#book-controls {
+  display: flex;
+  gap: 6px;
+  padding: 0 16px 10px;
+}
+#book-controls select {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+#book-controls button {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+#book-controls button:hover { background: var(--bg); }
+#book-controls button:disabled { cursor: default; opacity: 0.5; }
+
+#cart-list { list-style: none; margin: 0; padding: 0 8px; overflow-y: auto; flex: 1; }
+#cart-list li {
+  padding: 8px 8px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid var(--border);
+}
+#cart-list .cart-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#cart-list .cart-title.unavailable { color: var(--danger); font-style: italic; }
+#cart-list button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-faint);
+  padding: 2px 4px;
+}
+#cart-list button:hover { color: var(--text); }
+#cart-list button:disabled { color: #d8dde0; cursor: default; }
+.cart-empty { color: var(--text-faint); padding: 12px 16px; font-size: 12px; }
+#render-book-btn {
+  margin: 10px 16px;
+  padding: 9px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  transition: background 0.15s;
+}
+#render-book-btn:hover:not(:disabled) { background: var(--accent-dark); }
+#render-book-btn:disabled { cursor: default; opacity: 0.45; }
+#book-status { font-size: 12px; color: var(--text-muted); padding: 0 16px 10px; }
+#book-status.error { color: var(--danger); }
+
+/* ---------- Editor ---------- */
+#editor-layout { display: flex; height: 100%; width: 100%; }
+#editor-pane { display: flex; flex-direction: column; width: 45%; height: 100%; background: var(--surface); }
+#editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+#editor-title { color: var(--text-muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#editor-toolbar button {
+  padding: 7px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+}
+#editor-toolbar button:hover { background: var(--bg); }
+#publish-btn { color: var(--accent); border-color: var(--accent-soft); background: var(--accent-soft); }
+#publish-btn:hover { background: #dcedf4; }
+#publish-btn.published { background: var(--success-soft); border-color: var(--success-soft); color: var(--success); }
+#save-status { font-size: 12px; color: var(--text-muted); }
+#save-status.error { color: var(--danger); }
+
+#editor-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  border-right: 1px solid var(--border);
+}
+#editor-gutter {
+  flex-shrink: 0;
+  width: 44px;
+  overflow: hidden;
+  padding: 14px 8px 14px 0;
+  box-sizing: border-box;
+  text-align: right;
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-faint);
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  user-select: none;
+}
+.gutter-line.error {
+  color: #fff;
+  background: var(--danger);
+  border-radius: 3px;
+}
+
+#editor {
+  flex: 1;
+  min-width: 0;
+  padding: 14px;
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 14px;
+  line-height: 20px;
+  border: none;
+  resize: none;
+  outline: none;
+  background: var(--surface);
+  color: var(--text);
+}
+
+#preview-pane { flex: 1; height: 100%; position: relative; background: #eceff1; }
+#preview { width: 100%; height: 100%; border: none; }
+#status {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 11px;
+  background: #222;
+  color: #fff;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+  opacity: 0.9;
+  display: none;
+}
+#status.error { background: var(--danger); }
+#log {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 40%;
+  overflow: auto;
+  background: #1e1e1e;
+  color: #f88;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  padding: 10px;
+  display: none;
+}
+
+/* ---------- PDF-Vollbild-Vorschau ---------- */
+/* Statt window.open(blob) (auf Mobile durch Popup-Blocker unzuverlässig): ein
+   Overlay direkt in der Seite - funktioniert identisch auf Desktop und Handy und
+   ist genau das "Noten am Handy aufmachen und danach spielen"-Erlebnis. */
+#pdf-overlay {
+  position: fixed;
+  inset: 0;
+  background: #24272b;
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+}
+#pdf-overlay.open { display: flex; }
+#pdf-overlay-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #1a1c1f;
+  color: #fff;
+  flex-shrink: 0;
+}
+#pdf-overlay-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#pdf-overlay-download, #pdf-overlay-close {
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.08);
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+#pdf-overlay-download:hover, #pdf-overlay-close:hover { background: rgba(255,255,255,0.18); }
+#pdf-overlay-frame { flex: 1; border: none; background: #fff; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 760px) {
+  #topnav { padding: 10px 14px; gap: 8px; }
+  #topnav-left { gap: 14px; font-size: 13px; }
+  #logout-btn { padding: 6px 0; } /* groesseres Tap-Ziel, ohne Layout zu veraendern */
+
+  #page-body { flex-direction: column; }
+  #song-browser { padding: 16px; }
+  .cart-panel { width: 100%; border-left: none; border-top: 1px solid var(--border); }
+  #cart-list { max-height: 260px; }
+
+  .song-row-list li { padding: 12px; }
+  .song-row-list .song-text { flex-basis: 100%; order: -1; }
+  .song-row-list button, .song-row-list a.btn-link { padding: 9px 14px; font-size: 13.5px; }
+
+  /* Kleine Icon-Buttons (↑ ↓ ✕, ▲ ▼) sind auf Desktop bewusst dezent-klein,
+     brauchen am Finger aber ein groesseres Tap-Ziel als der Text selbst zeigt. */
+  #cart-list button {
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 16px;
+  }
+  .vote-btn { min-width: 32px; min-height: 28px; font-size: 14px; }
+  .vote-score { font-size: 13px; }
+  #book-controls button { padding: 8px 14px; }
+  .book-picker-row { padding: 10px 12px; }
+
+  #editor-layout { flex-direction: column; }
+  #editor-pane { width: 100%; height: 45vh; border-right: none; border-bottom: 1px solid var(--border); }
+  #editor-body { border-right: none; }
+  #preview-pane { height: 55vh; }
+  #editor-toolbar button { padding: 9px 16px; }
+
+  #pdf-overlay-bar { padding: 12px; }
+  #pdf-overlay-download, #pdf-overlay-close { padding: 9px 14px; }
+}

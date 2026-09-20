@@ -206,6 +206,12 @@ class Style:
   {lyric_style} #1%
 }}
 
+% Reine Akkordzeile (z.B. Intro-/Interlude-Riff ohne Text): analog zu \lyricline
+% kompakt, ohne die für Silben-Text reservierte zweite Zeile.
+\newcommand{{\chordline}}[1]{{%
+  \color{{chordcolor}}\{self.chord_size}{chord_weight} #1%
+}}
+
 % Dezentes Strophenlabel (z.B. "Refrain", "Strophe 1")
 \newcommand{{\paragraphtitle}}[1]{{%
   \noindent{{\color{{titlecolor}}\{self.title_size}{title_weight}{title_shape} #1}}\\[{self.title_gap}]%
@@ -213,7 +219,35 @@ class Style:
 
 % Kopfzeile: ein Befehl pro Metadaten-Kategorie (\metaTitle, \metaArtist, ...)
 {self._meta_macros_latex()}
+
+{self._song_layout_macro()}
 """
+
+    def _song_layout_macro(self) -> str:
+        """\\cordaSongLayout{{...}}: misst den Song-Inhalt bei Spaltenbreite vor.
+        Passt er in eine Spaltenhoehe, wird er einspaltig (an Spaltenbreite) gesetzt,
+        statt ihn per multicols künstlich auf alle Spalten zu balancieren - multicols
+        würde sonst auch kurze Songs immer auf alle Spalten verteilen, selbst wenn
+        eine Spalte locker gereicht hätte."""
+        if self.columns <= 1:
+            return ""
+        column_gaps = self.columns - 1
+        return rf"""% Kurze Songs nicht künstlich auf {self.columns} Spalten balancieren (siehe
+% Kommentar in transformer/style.py): Inhalt wird bei Spaltenbreite vorab in eine
+% Box gemessen - passt er in eine Spaltenhöhe, bleibt es einspaltig, sonst echt
+% mehrspaltig.
+\newsavebox{{\cordaMeasureBox}}
+\newlength{{\cordaColWidth}}
+\setlength{{\cordaColWidth}}{{\dimexpr(\textwidth-{column_gaps}\columnsep)/{self.columns}\relax}}
+
+\newcommand{{\cordaSongLayout}}[1]{{%
+  \sbox{{\cordaMeasureBox}}{{\begin{{minipage}}[t]{{\cordaColWidth}}\raggedright\setlength{{\parskip}}{{{self.paragraph_skip}}}#1\end{{minipage}}}}%
+  \ifdim\dimexpr\ht\cordaMeasureBox+\dp\cordaMeasureBox\relax>\textheight
+    \begin{{multicols}}{{{self.columns}}}#1\end{{multicols}}%
+  \else
+    \usebox{{\cordaMeasureBox}}%
+  \fi
+}}"""
 
     def _meta_macros_latex(self) -> str:
         return "\n\n".join(

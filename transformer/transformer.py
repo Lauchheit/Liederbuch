@@ -15,6 +15,10 @@ class Line:
     def has_chords(self) -> bool:
         return any(chord for word in self.tokens for chord, _ in word.boxes)
 
+    @property
+    def has_lyrics(self) -> bool:
+        return any(text for word in self.tokens for _, text in word.boxes)
+
 @dataclass
 class Paragraph:
     title: str

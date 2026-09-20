@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corda – Editor</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+<div id="page-body">
+  <div id="editor-layout">
+    <div id="editor-pane">
+      <div id="editor-toolbar">
+        <span id="editor-title">Neuer Song (nicht gespeichert)</span>
+        <span id="save-status"></span>
+        <button id="save-btn">Speichern</button>
+        <button id="publish-btn">Veröffentlichen</button>
+      </div>
+      <div id="editor-body">
+        <div id="editor-gutter"></div>
+        <textarea id="editor" spellcheck="false" placeholder="---&#10;Title: ...&#10;---&#10;&#10;[Verse 1]&#10;My {B}feet are aching"></textarea>
+      </div>
+    </div>
+    <div id="preview-pane">
+      <div id="status"></div>
+      <iframe id="preview"></iframe>
+      <div id="log"></div>
+    </div>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+const editor = document.getElementById("editor");
+const editorGutter = document.getElementById("editor-gutter");
+const preview = document.getElementById("preview");
+const status = document.getElementById("status");
+const log = document.getElementById("log");
+const editorTitleEl = document.getElementById("editor-title");
+const saveBtn = document.getElementById("save-btn");
+const publishBtn = document.getElementById("publish-btn");
+const saveStatus = document.getElementById("save-status");
+
+const DEFAULT_CONTENT = `---
+Title: Beispielsong
+Artist: Jemand
+---
+
+[Verse 1]
+My {B}feet are aching
+And your {Eb}back is pretty tired`;
+
+const DRAFT_KEY = "corda-editor-draft"; // nur fuer neue, noch ungespeicherte Songs
+
+const params = new URLSearchParams(location.search);
+let currentSongId = params.get("id") ? parseInt(params.get("id"), 10) : null;
+let currentPublished = false;
+let currentTitle = null;
+let debounceTimer = null;
+let currentUrl = null;
+
+function setStatus(text, isError) {
+  status.textContent = text;
+  status.className = isError ? "error" : "";
+  status.style.display = text ? "block" : "none";
+}
+
+function setSaveStatus(text, isError) {
+  saveStatus.textContent = text;
+  saveStatus.className = isError ? "error" : "";
+}
+
+function updateToolbar() {
+  editorTitleEl.textContent = currentTitle || "Neuer Song (nicht gespeichert)";
+  publishBtn.textContent = currentPublished ? "Zurückziehen" : "Veröffentlichen";
+  publishBtn.classList.toggle("published", currentPublished);
+}
+
+// Zeilennummern-Gutter: Anzahl der Zeilen nachfuehren, Scroll synchron zur Textarea.
+function updateGutter() {
+  const lineCount = editor.value.split("\n").length;
+  const current = editorGutter.children.length;
+  if (current < lineCount) {
+    const frag = document.createDocumentFragment();
+    for (let i = current + 1; i <= lineCount; i++) {
+      const div = document.createElement("div");
+      div.className = "gutter-line";
+      div.textContent = i;
+      div.dataset.line = i;
+      frag.appendChild(div);
+    }
+    editorGutter.appendChild(frag);
+  } else if (current > lineCount) {
+    for (let i = current; i > lineCount; i--) {
+      editorGutter.removeChild(editorGutter.lastChild);
+    }
+  }
+}
+
+function setErrorLine(line) {
+  const prev = editorGutter.querySelector(".gutter-line.error");
+  if (prev) prev.classList.remove("error");
+  if (!line) return;
+  const el = editorGutter.querySelector(`.gutter-line[data-line="${line}"]`);
+  if (el) el.classList.add("error");
+}
+
+editor.addEventListener("scroll", () => {
+  editorGutter.scrollTop = editor.scrollTop;
+});
+
+async function renderPreview() {
+  const content = editor.value;
+  if (!currentSongId) localStorage.setItem(DRAFT_KEY, content);
+  updateGutter();
+  setStatus("rendere...", false);
+  log.style.display = "none";
+
+  try {
+    const res = await apiFetch("/api/render", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      setStatus(err.error || "Fehler", true);
+      setErrorLine(err.line || null);
+      if (err.log) {
+        log.textContent = err.log;
+        log.style.display = "block";
+      }
+      return;
+    }
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    preview.src = url;
+    if (currentUrl) URL.revokeObjectURL(currentUrl);
+    currentUrl = url;
+    setStatus("", false);
+    setErrorLine(null);
+  } catch (e) {
+    if (e.message !== "unauthorized") setStatus("Netzwerkfehler: " + e, true);
+  }
+}
+
+async function loadExistingSong(id) {
+  try {
+    const res = await apiFetch(`/api/my-songs/${id}`);
+    if (!res.ok) {
+      setSaveStatus("Song nicht gefunden", true);
+      editor.value = DEFAULT_CONTENT;
+      currentSongId = null;
+      updateToolbar();
+      renderPreview();
+      return;
+    }
+    const data = await res.json();
+    editor.value = data.content;
+    currentSongId = data.id;
+    currentPublished = data.published;
+    currentTitle = data.title;
+    updateToolbar();
+    renderPreview();
+  } catch (e) {
+    // 401 wird schon von apiFetch behandelt
+  }
+}
+
+async function saveSong() {
+  const method = currentSongId ? "PUT" : "POST";
+  const url = currentSongId ? `/api/my-songs/${currentSongId}` : "/api/my-songs";
+  setSaveStatus("speichere...", false);
+  try {
+    const res = await apiFetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: editor.value }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setSaveStatus(data.error || "Fehler beim Speichern", true);
+      return null;
+    }
+    const wasNew = !currentSongId;
+    currentSongId = data.id;
+    currentTitle = data.title;
+    if (wasNew) {
+      localStorage.removeItem(DRAFT_KEY);
+      history.replaceState(null, "", `editor.html?id=${currentSongId}`);
+    }
+    updateToolbar();
+    setSaveStatus("gespeichert", false);
+    setTimeout(() => setSaveStatus("", false), 2000);
+    return currentSongId;
+  } catch (e) {
+    setSaveStatus("Netzwerkfehler", true);
+    return null;
+  }
+}
+
+saveBtn.addEventListener("click", saveSong);
+
+publishBtn.addEventListener("click", async () => {
+  const id = await saveSong();
+  if (!id) return;
+  const endpoint = currentPublished ? "unpublish" : "publish";
+  try {
+    const res = await apiFetch(`/api/my-songs/${id}/${endpoint}`, { method: "POST" });
+    if (res.ok) {
+      currentPublished = !currentPublished;
+      updateToolbar();
+    }
+  } catch (e) {
+    // 401 wird schon von apiFetch behandelt
+  }
+});
+
+editor.addEventListener("input", () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(renderPreview, 600);
+});
+
+initAuth(() => {
+  if (currentSongId) {
+    loadExistingSong(currentSongId);
+  } else {
+    editor.value = localStorage.getItem(DRAFT_KEY) || DEFAULT_CONTENT;
+    updateToolbar();
+    renderPreview();
+  }
+});
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.7.19)  18 SEP 2026 15:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.7.19)  20 SEP 2026 18:44
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -147,6 +147,8 @@ Package: iftex 2024/12/12 v1.0g TeX engine tests
 \Gm@dimlist=\toks20
 
 (C:\Users\cleme\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cfg))
+\cordaMeasureBox=\box99
+\cordaColWidth=\skip53
 
 (C:\Users\cleme\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
 tex.def
@@ -155,27 +157,27 @@ File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 ) (output.aux)
 \openout1 = `output.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 80.
+LaTeX Font Info:    ... okay on input line 80.
 
 (C:\Users\cleme\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
 ii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count298
 \scratchdimen=\dimen166
-\scratchbox=\box99
+\scratchbox=\box100
 \nofMPsegments=\count299
 \nofMParguments=\count300
 \everyMPshowfont=\toks21
@@ -219,36 +221,50 @@ ii
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 64.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 64.
-[1
+(output.toc)
+\tf@toc=\write3
+\openout3 = `output.toc'.
 
-{C:/Users/cleme/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2]
-[3] [4] [5] [6] [7] [8] [9] [10] [11] [12] (output.aux)
+ [1
+
+{C:/Users/cleme/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 155.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 155.
+ [2]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <9> on input line 296.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 296.
+
+Overfull \vbox (27.75554pt too high) has occurred while \output is active []
+
+
+[3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] (output.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 2196 strings out of 467871
- 34829 string characters out of 5418376
- 565967 words of memory out of 5000000
- 31106 multiletter control sequences out of 15000+600000
- 629878 words of font info for 47 fonts, out of 8000000 for 9000
+ 2224 strings out of 467871
+ 35191 string characters out of 5418376
+ 614669 words of memory out of 5000000
+ 31125 multiletter control sequences out of 15000+600000
+ 632315 words of font info for 55 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,9n,65p,206b,374s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 57i,11n,65p,185b,381s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/cleme/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
-cmbx12.pfb><C:/Users/cleme/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
-fonts/cm/cmbx9.pfb><C:/Users/cleme/AppData/Local/Programs/MiKTeX/fonts/type1/pu
-blic/amsfonts/cm/cmcsc10.pfb><C:/Users/cleme/AppData/Local/Programs/MiKTeX/font
-s/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/cleme/AppData/Local/Programs/MiK
-TeX/fonts/type1/public/amsfonts/cm/cmti9.pfb>
-Output written on output.pdf (12 pages, 107563 bytes).
+cmbx10.pfb><C:/Users/cleme/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmbx12.pfb><C:/Users/cleme/AppData/Local/Programs/MiKTeX/fonts/type1/p
+ublic/amsfonts/cm/cmbx9.pfb><C:/Users/cleme/AppData/Local/Programs/MiKTeX/fonts
+/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Users/cleme/AppData/Local/Programs/Mi
+KTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/cleme/AppData/Local/Pro
+grams/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb>
+Output written on output.pdf (13 pages, 127137 bytes).
 PDF statistics:
- 66 PDF objects out of 1000 (max. 8388607)
+ 75 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

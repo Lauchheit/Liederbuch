@@ -2,3 +2,5 @@ __pycache__/
 .vscode
 .claude
 .pyc
+input/app.db
+input/.secret_key
