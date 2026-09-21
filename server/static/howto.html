@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corda – Hilfe</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+<div id="page-body">
+  <div id="howto-page">
+    <h1>Wie schreibe ich einen Song?</h1>
+    <p class="howto-intro">
+      Ein Song besteht aus etwas Text mit Akkorden dazwischen. Hier lernst du
+      das <code>.corda</code>-Format Schritt für Schritt.
+    </p>
+
+    <section>
+      <h2>1. Titel und Interpret</h2>
+      <p>
+        Jeder Song beginnt (optional) mit einem Kopf zwischen drei Strichen:
+      </p>
+      <pre><code>---
+Title: As The World Caves In
+Artist: Matt Maltese
+---</code></pre>
+      <p>
+        Beides ist optional und du kannst auch <code>Subtitle</code> (z. B. um
+        eine eigene Cover-Version zu kennzeichnen) oder <code>Instruction</code>
+        (z. B. eine Spielanweisung) ergänzen. Lässt du den ganzen Kopf weg,
+        heißt der Song einfach „Unbenannt“.
+      </p>
+    </section>
+
+    <section>
+      <h2>2. Strophen</h2>
+      <p>
+        Danach kommen eine oder mehrere Strophen. Jede Strophe kann mit einer
+        Überschrift in eckigen Klammern beginnen – schreib rein, was du willst,
+        z. B. <code>[Verse 1]</code>, <code>[Chorus]</code>, <code>[Bridge]</code>
+        oder <code>[Solo]</code>:
+      </p>
+      <pre><code>[Verse 1]
+My feet are aching
+And your back is pretty tired</code></pre>
+    </section>
+
+    <section>
+      <h2>3. Akkorde einfügen</h2>
+      <p>
+        Ein Akkord kommt in <strong>geschweifte Klammern</strong>, direkt vor
+        die Silbe, über der er stehen soll – ohne Leerzeichen dazwischen:
+      </p>
+      <pre><code>My {B}feet are aching
+And your {Eb}back is pretty tired</code></pre>
+      <p>Eine Zeile darf auch mehrere Akkorde haben:</p>
+      <pre><code>Take a {C7}sad song and make it {F}better</code></pre>
+      <p>
+        Zeilen ganz ohne Akkorde sind völlig normal – du musst nicht überall
+        einen Akkord hinschreiben.
+      </p>
+    </section>
+
+    <section>
+      <h2>4. Reine Akkordzeilen (z. B. Intro)</h2>
+      <p>
+        Für ein Intro oder ein Zwischenspiel ohne Text reicht eine Zeile nur
+        mit Akkorden – <strong>wichtig: mit Leerzeichen dazwischen</strong>,
+        sonst kleben sie beim Rendern aneinander:
+      </p>
+      <pre><code>[Intro]
+{C} {CM7} {Am} {CM7}</code></pre>
+    </section>
+
+    <section>
+      <h2>5. Akkordnamen</h2>
+      <p>
+        Bei Akkordnamen musst du nichts escapen – <code>D#</code>,
+        <code>Gm/F</code>, <code>C7</code>, <code>C+9</code> funktionieren
+        alle automatisch, genau wie Umlaute oder Satzzeichen im Liedtext.
+      </p>
+    </section>
+
+    <section>
+      <h2>6. Ein vollständiges Beispiel</h2>
+      <pre><code>---
+Title: As The World Caves In
+Artist: Matt Maltese
+---
+
+[Verse 1]
+My {B}feet are aching
+And your {Eb}back is pretty tired
+
+[Chorus]
+{Eb7}you that I {Ebm6}lie with
+As the {B}atom bomb {D7}locks in</code></pre>
+      <p>
+        Das war's schon – tipp das Ganze einfach in den Editor, rechts siehst
+        du sofort, wie es als PDF aussieht. Verrutscht etwas, markiert dir der
+        Editor die betroffene Zeile rot.
+      </p>
+    </section>
+
+    <section>
+      <h2>Die App kurz erklärt</h2>
+      <ul>
+        <li><strong>Songs durchstöbern</strong> – alle veröffentlichten Songs; Klick öffnet die bestbewertete Version als PDF.</li>
+        <li><strong>Eigene Songs</strong> – deine Entwürfe und Veröffentlichungen; „Importieren“ lädt gleich mehrere <code>.corda</code>-Dateien auf einmal hoch.</li>
+        <li><strong>Editor</strong> – „Speichern“ legt einen Entwurf an (nur für dich sichtbar), „Veröffentlichen“ macht ihn für alle sichtbar.</li>
+        <li><strong>Versionen &amp; Bewerten</strong> – „Bearbeiten“ bei einem fremden Song legt eine eigene Kopie an, das Original bleibt unberührt; mit ▲▼ kannst du Versionen hoch-/runterstimmen.</li>
+        <li><strong>Liederbücher</strong> – rechts eigene Liederbücher anlegen, Songs per „+ Liederbuch“ hinzufügen, als ein PDF mit Inhaltsverzeichnis rendern.</li>
+        <li><strong>Am Handy</strong> – jede Vorschau öffnet sich als Vollbild-PDF, ideal zum Musizieren direkt vom Bildschirm.</li>
+      </ul>
+    </section>
+
+    <p class="howto-footer">
+      Noch Fragen? Frag jemanden, der/die die App gebaut hat 🙂
+    </p>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+initAuth(() => {});
+</script>
+</body>
+</html>

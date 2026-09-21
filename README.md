@@ -1,8 +1,16 @@
 # Liederbuch
 
 Ein Tool, das Songtexte mit Akkord-Annotationen (eigenes `.corda`-Format) in ein
-zweispaltiges PDF-Liederbuch rendert. Pipeline: `.corda`-Dateien in `input/`
+zweispaltiges PDF-Liederbuch rendert. Pipeline: `.corda`-Dateien
 → Lark-Grammatik (CST) → Transformer (AST) → LaTeX-Renderer → `pdflatex`.
+
+Es gibt zwei Wege, die Pipeline zu nutzen:
+
+- **CLI** (`main.py`): liest `.corda`-Dateien aus `input/`, baut ein einzelnes
+  PDF. Siehe [Verwendung](#verwendung) unten.
+- **Web-App** (`server/`): Mehrbenutzer-FastAPI-App mit Editor, Live-Vorschau,
+  Songverwaltung, Versionierung und Liederbüchern. Siehe
+  [Web-App](#web-app-server).
 
 ## Verwendung
 
@@ -136,7 +144,135 @@ Größen-Werte müssen ein gültiger LaTeX-Größenbefehl ohne Backslash sein:
 Farben sind Hex-Codes ohne `#`. Booleans akzeptieren `true`/`false` (auch
 `1`/`0`, `yes`/`no`, `on`/`off`).
 
-## Projektstruktur
+## Web-App (`server/`)
+
+Eine FastAPI-App über derselben Pipeline (`transformer/*`), die statt einer
+einzelnen `input/`-basierten CLI-Ausführung ein Mehrbenutzer-Web-Frontend
+bietet: Songs anlegen/bearbeiten mit Live-Vorschau, veröffentlichen,
+Versionen/Forks, Up-/Downvotes, Liederbücher zusammenstellen und als PDF
+rendern.
+
+### Starten
+
+```bash
+docker compose up -d --build
+```
+
+Öffnet auf `http://localhost:8000`. Der Container installiert `pdflatex`
+selbst (`texlive-latex-base`, `texlive-latex-extra`,
+`texlive-fonts-recommended` im [`server/dockerfile`](server/dockerfile)) -
+im Gegensatz zur CLI muss dafür lokal nichts eingerichtet werden.
+
+Ohne Docker lokal starten (z.B. für schnellere Iteration, benötigt lokal
+installiertes `pdflatex`):
+
+```bash
+pip install -r requirements.txt
+uvicorn server.app:app --reload
+```
+
+### Seiten
+
+Statisch ausgeliefert aus `server/static/`, gemeinsame Logik (Auth-Overlay,
+Top-Nav, Liederbuch-Widget, "Zu Liederbuch hinzufügen"-Popover, PDF-Vollbild-
+Vorschau) liegt in `common.js`/`common.css` und wird von jeder Seite geladen.
+
+| Seite | Zweck |
+|---|---|
+| `index.html` | Songs durchstöbern: veröffentlichte Songs, gruppiert nach (Titel, Artist), sortiert nach Score der besten Version. Ohne Suche nur Top 20, Suche durchsucht serverseitig den ganzen Katalog. |
+| `my-songs.html` | Eigene Songs (Entwürfe + eigene veröffentlichte), bearbeiten/veröffentlichen/importieren. |
+| `editor.html` | Live-Editor: Textarea mit Zeilennummern-Gutter links, gerenderte PDF-Vorschau rechts (debounced, 600ms). Bei Parse-Fehlern wird die betroffene Zeile im Gutter rot markiert (`line`/`column` aus der Lark-Exception). |
+| `versions.html` | Alle Versionen eines Songs (gleicher Titel+Artist), sortiert nach Score, mit Vote-Buttons. |
+| `howto.html` | Einfache Nutzer-Anleitung (verlinkt als "Hilfe" in der Top-Nav). |
+
+### API-Endpunkte (`server/app.py`)
+
+Alle Endpunkte außer `/api/register` und `/api/login` verlangen eine gültige
+Session (Cookie, siehe Persistenz unten) - ohne liefern sie `401`.
+
+| Endpunkt | Zweck |
+|---|---|
+| `POST /api/register`, `/api/login`, `/api/logout`, `GET /api/me` | Auth. |
+| `POST /api/render` | Ad-hoc-Vorschau eines rohen `.corda`-Texts (Editor-Live-Preview), nicht persistiert. |
+| `GET/POST /api/my-songs`, `GET/PUT /api/my-songs/{id}` | Eigene Songs auflisten/anlegen/lesen/bearbeiten. |
+| `POST /api/my-songs/{id}/publish` bzw. `/unpublish` | Sichtbarkeit umschalten. |
+| `GET /api/public-songs?q=` | Veröffentlichte Songs gruppiert, nach Score sortiert (Top 20 ohne `q`). |
+| `GET /api/song-versions?title=&artist=` | Alle Versionen einer Song-Familie inkl. Score, sortiert. |
+| `POST /api/songs/{id}/fork` | Kopiert eine fremde (veröffentlichte) Version als eigenen Entwurf. |
+| `POST /api/songs/{id}/vote` | Up-/Downvote, Toggle bei erneutem Klick auf denselben Wert. |
+| `POST /api/render-book` | Rendert eine Ad-hoc-Liste von `song_ids` zu einem PDF (mit Inhaltsverzeichnis bei >1 Song). |
+| `GET/POST /api/books`, `GET/PUT/DELETE /api/books/{id}`, `POST /api/books/{id}/render` | Persistierte, benannte Liederbücher. |
+
+### Persistenzschicht
+
+Kein externer DB-Server - alles liegt in einer einzigen **SQLite-Datei** plus
+ein paar Nebendateien in einem Datenordner, der per Docker-Volume persistiert
+wird (siehe [`docker-compose.yml`](docker-compose.yml), Volume `corda-songs`
+→ `/app/input` im Container). Pfad konfigurierbar über die Env-Variable
+`CORDA_DATA_DIR` (Default `input`).
+
+```
+<CORDA_DATA_DIR>/
+  app.db          SQLite-DB (siehe Schema unten)
+  .secret_key     Session-Signierschlüssel, s.u.
+```
+
+**`app.db`-Schema** (angelegt/migriert beim Start in `init_db()`):
+
+| Tabelle | Felder | Zweck |
+|---|---|---|
+| `users` | `id, username (unique), password_hash (bcrypt), created_at` | Accounts. |
+| `songs` | `id, owner_id, title, artist, subtitle, content (.corda-Text), published, created_at, updated_at` | Ein Datensatz pro Song-*Version*. `title`/`artist`/`subtitle` sind beim Speichern aus `content` geparste Kopien (fürs schnelle Auflisten/Gruppieren, ohne jedes Mal neu zu parsen). |
+| `books` | `id, owner_id, name, song_ids (JSON-Array), created_at, updated_at` | Ein Liederbuch = benannte, geordnete Liste von `song.id`s. Kein Join-Table - bewusst einfach gehalten, siehe unten. |
+| `votes` | `user_id, song_id, value (1/-1)`, PK `(user_id, song_id)` | Ein Vote pro User+Song, erzwungen durch den Primary Key. |
+
+Schema-Änderungen an bestehenden Spalten laufen über `ensure_column()`
+(`ALTER TABLE ... ADD COLUMN`, da SQLite kein `ADD COLUMN IF NOT EXISTS`
+kennt) statt über ein Migrationstool - für den Umfang des Projekts bewusst
+minimal gehalten.
+
+**Wichtige Designentscheidungen:**
+
+- **Songs sind nicht in Dateien** (anders als bei der CLI/`input/`) -
+  jede Version liegt als Zeile in `songs`. "Versionen" eines Songs sind
+  schlicht alle Zeilen mit gleichem `title`+`artist` (exakter String-Vergleich,
+  kein Fuzzy-Matching).
+- **Liederbuch-Mitgliedschaft** liegt als JSON-Array direkt in der `books`-Zeile
+  statt in einer normalisierten Zwischentabelle - bei der erwarteten
+  Datenmenge (private Liederbücher weniger Nutzer) unproblematisch und
+  spart einen Join bei jedem Request. `resolve_book_songs()` löst die IDs bei
+  Bedarf gegen `songs` auf und markiert nicht mehr verfügbare Songs
+  (gelöscht/zurückgezogen) statt sie kommentarlos verschwinden zu lassen.
+- **Score** (`compute_scores()` in `server/app.py`) = `upvotes - downvotes +
+  3 × Anzahl Liederbücher anderer User, die die Version enthalten`. Bewusst
+  nur *anderer* User, sonst könnte man sich durch eigene Liederbücher selbst
+  hochstimmen.
+- **Session-Handling**: `starlette.middleware.sessions.SessionMiddleware`
+  (signiertes Cookie, keine Server-Session-Tabelle). Der Signierschlüssel wird
+  beim ersten Start zufällig erzeugt und nach `<CORDA_DATA_DIR>/.secret_key`
+  geschrieben (übersteht dadurch Container-Neustarts); alternativ per
+  `SECRET_KEY`-Env-Variable fix vorgeben (z.B. für mehrere Replicas hinter
+  einem Load-Balancer). `https_only=False` passend zum aktuellen
+  HTTP-Setup - hinter einem HTTPS-Reverse-Proxy sollte das auf `True`.
+- **PDF-Kompilierung** läuft nie gegen echte Dateien im Projektverzeichnis,
+  sondern in einem `tempfile.TemporaryDirectory()` pro Request
+  (`compile_pdf()`), das PDF wird als Bytes zurückgegeben statt als Datei
+  referenziert - kein Cleanup-Risiko, keine Kollisionen zwischen parallelen
+  Requests.
+
+### Projektstruktur (Web-App-Teil)
+
+```
+server/app.py                FastAPI-App: Auth, Songs, Buecher, Votes, PDF-Rendering
+server/dockerfile            Python + pdflatex (texlive)
+server/static/*.html         Seiten (siehe Tabelle oben)
+server/static/common.js      Auth-Overlay, Top-Nav, Liederbuch-Widget, PDF-Overlay
+server/static/common.css     Gemeinsames Styling (CSS-Variablen in :root)
+docker-compose.yml           Service + benanntes Volume fuer den Datenordner
+requirements.txt             lark, fastapi, uvicorn, bcrypt, itsdangerous
+```
+
+## Projektstruktur (CLI-Teil)
 
 ```
 main.py                    Einstiegspunkt: liest input/, parst, rendert, kompiliert

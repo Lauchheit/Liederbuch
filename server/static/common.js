@@ -45,6 +45,7 @@ function injectChrome() {
         <a href="editor.html" class="new-song-link">+ Neuer Song</a>
       </div>
       <div id="topnav-right">
+        <a href="howto.html">Hilfe</a>
         <span id="current-username"></span>
         <button id="logout-btn">Abmelden</button>
       </div>
