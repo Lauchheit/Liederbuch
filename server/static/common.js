@@ -317,6 +317,10 @@ function escapeHtml(s) {
 // die man am Handy zum Ablesen der Noten will.
 
 let _pdfOverlayUrl = null;
+// Wenn gesetzt, kann die Vorschau live transponiert werden: (semitones) => Promise<Response>.
+// Bleibt null (Stepper ausgeblendet), wenn der Aufrufer keine Re-Render-Funktion mitgibt.
+let _pdfOverlayRenderFn = null;
+let _pdfOverlayTranspose = 0;
 
 function ensurePdfOverlay() {
   let el = document.getElementById("pdf-overlay");
@@ -326,21 +330,51 @@ function ensurePdfOverlay() {
     <div id="pdf-overlay">
       <div id="pdf-overlay-bar">
         <span id="pdf-overlay-title"></span>
+        <div id="pdf-overlay-transpose">
+          <span class="transpose-label">Transponieren</span>
+          <button id="pdf-overlay-transpose-down" title="Halbton runter" type="button">−</button>
+          <span id="pdf-overlay-transpose-value">±0</span>
+          <button id="pdf-overlay-transpose-up" title="Halbton hoch" type="button">+</button>
+          <span id="pdf-overlay-transpose-key"></span>
+        </div>
         <a id="pdf-overlay-download" download="liederbuch.pdf">Herunterladen</a>
         <button id="pdf-overlay-close">✕ Schließen</button>
       </div>
+      <div id="pdf-overlay-warnings"></div>
       <iframe id="pdf-overlay-frame"></iframe>
     </div>
   `);
   el = document.getElementById("pdf-overlay");
   document.getElementById("pdf-overlay-close").addEventListener("click", closePdfOverlay);
+  document.getElementById("pdf-overlay-transpose-down").addEventListener("click", () => _stepPdfOverlayTranspose(-1));
+  document.getElementById("pdf-overlay-transpose-up").addEventListener("click", () => _stepPdfOverlayTranspose(1));
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && el.classList.contains("open")) closePdfOverlay();
   });
   return el;
 }
 
-function showPdfOverlay(blob, title) {
+function _setPdfOverlayWarnings(warningsHeader, skippedHeader) {
+  const el = document.getElementById("pdf-overlay-warnings");
+  const parts = [];
+  if (skippedHeader) parts.push(`Übersprungen: ${JSON.parse(skippedHeader).join(", ")}`);
+  if (warningsHeader) parts.push(...JSON.parse(warningsHeader));
+  el.textContent = parts.join("  |  ");
+  el.style.display = parts.length ? "block" : "none";
+}
+
+// Zeigt an, in welche Tonart der aktuelle Transpose-Wert führt (nur wenn der
+// Song eine "Key:"-Angabe hat - server liefert dafür X-Transposed-Key mit).
+function _setPdfOverlayKey(keyHeader) {
+  const el = document.getElementById("pdf-overlay-transpose-key");
+  el.textContent = keyHeader ? `→ ${keyHeader}` : "";
+  el.style.display = keyHeader ? "inline" : "none";
+}
+
+// opts: { renderFn?: (semitones) => Promise<Response>, warnings?: string|null, skipped?: string|null, key?: string|null }
+// renderFn fehlt -> Transponier-Stepper wird ausgeblendet (z.B. bei Fehler-Fallbacks ohne bekannte Song-IDs).
+function showPdfOverlay(blob, title, opts) {
+  opts = opts || {};
   const el = ensurePdfOverlay();
   if (_pdfOverlayUrl) URL.revokeObjectURL(_pdfOverlayUrl);
   const url = URL.createObjectURL(blob);
@@ -349,8 +383,37 @@ function showPdfOverlay(blob, title) {
   document.getElementById("pdf-overlay-title").textContent = title || "Vorschau";
   document.getElementById("pdf-overlay-download").href = url;
   document.getElementById("pdf-overlay-frame").src = url;
+  _setPdfOverlayWarnings(opts.warnings, opts.skipped);
+  _setPdfOverlayKey(opts.key);
+
+  _pdfOverlayRenderFn = opts.renderFn || null;
+  _pdfOverlayTranspose = 0;
+  document.getElementById("pdf-overlay-transpose-value").textContent = "±0";
+  document.getElementById("pdf-overlay-transpose").style.display = _pdfOverlayRenderFn ? "flex" : "none";
+
   el.classList.add("open");
   document.body.style.overflow = "hidden";
+}
+
+async function _stepPdfOverlayTranspose(delta) {
+  if (!_pdfOverlayRenderFn) return;
+  _pdfOverlayTranspose += delta;
+  const valueEl = document.getElementById("pdf-overlay-transpose-value");
+  valueEl.textContent = _pdfOverlayTranspose > 0 ? `+${_pdfOverlayTranspose}` : `${_pdfOverlayTranspose}`;
+  try {
+    const res = await _pdfOverlayRenderFn(_pdfOverlayTranspose);
+    if (!res.ok) return;
+    const blob = await res.blob();
+    if (_pdfOverlayUrl) URL.revokeObjectURL(_pdfOverlayUrl);
+    const url = URL.createObjectURL(blob);
+    _pdfOverlayUrl = url;
+    document.getElementById("pdf-overlay-download").href = url;
+    document.getElementById("pdf-overlay-frame").src = url;
+    _setPdfOverlayWarnings(res.headers.get("X-Chord-Warnings"), res.headers.get("X-Skipped-Songs"));
+    _setPdfOverlayKey(res.headers.get("X-Transposed-Key"));
+  } catch (e) {
+    // Netzwerkfehler beim Nachtransponieren: Anzeige bleibt beim zuletzt geladenen PDF.
+  }
 }
 
 function closePdfOverlay() {
@@ -364,6 +427,28 @@ function closePdfOverlay() {
     URL.revokeObjectURL(_pdfOverlayUrl);
     _pdfOverlayUrl = null;
   }
+  _pdfOverlayRenderFn = null;
+  _pdfOverlayTranspose = 0;
+}
+
+// Gemeinsamer Vorschau-Helfer fuer alle Nicht-Editor-Seiten (my-songs, versions, index):
+// rendert einmal, zeigt das Overlay inkl. Transponier-Stepper (re-rendert bei Bedarf dieselben song_ids).
+async function fetchAndShowPreview(songIds, title) {
+  const renderFn = (semitones) => apiFetch("/api/render-book", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ song_ids: songIds, transpose: semitones }),
+  });
+  const res = await renderFn(0);
+  if (!res.ok) return false;
+  const blob = await res.blob();
+  showPdfOverlay(blob, title, {
+    renderFn,
+    warnings: res.headers.get("X-Chord-Warnings"),
+    skipped: res.headers.get("X-Skipped-Songs"),
+    key: res.headers.get("X-Transposed-Key"),
+  });
+  return true;
 }
 
 // ---------- "Zu Liederbuch hinzufügen"-Popover (ersetzt die alte Checkbox) ----------
@@ -555,8 +640,12 @@ async function renderActiveBook() {
   statusEl.textContent = `rendere Buch (${activeBook.songs.length} Songs)...`;
   statusEl.className = "";
 
+  // Transponier-Stepper im Overlay rendert ueber denselben Endpunkt neu (?transpose=n).
+  const renderFn = (semitones) =>
+    apiFetch(`/api/books/${activeBook.id}/render?transpose=${semitones}`, { method: "POST" });
+
   try {
-    const res = await apiFetch(`/api/books/${activeBook.id}/render`, { method: "POST" });
+    const res = await renderFn(0);
 
     if (!res.ok) {
       const err = await res.json();
@@ -565,16 +654,14 @@ async function renderActiveBook() {
       return;
     }
 
-    const skippedHeader = res.headers.get("X-Skipped-Songs");
     const blob = await res.blob();
-    showPdfOverlay(blob, activeBook.name);
-
-    if (skippedHeader) {
-      statusEl.textContent = `Übersprungen: ${JSON.parse(skippedHeader).join(", ")}`;
-      statusEl.className = "error";
-    } else {
-      statusEl.textContent = "";
-    }
+    showPdfOverlay(blob, activeBook.name, {
+      renderFn,
+      warnings: res.headers.get("X-Chord-Warnings"),
+      skipped: res.headers.get("X-Skipped-Songs"),
+      key: res.headers.get("X-Transposed-Key"),
+    });
+    statusEl.textContent = "";
   } catch (e) {
     if (e.message !== "unauthorized") {
       statusEl.textContent = "Netzwerkfehler";

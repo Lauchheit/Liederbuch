@@ -60,6 +60,9 @@ def default_meta_styles() -> dict[MetaCategory, MetaStyle]:
         MetaCategory.instruction: MetaStyle(
             color="8A8A8A", size="footnotesize", smallcaps=True
         ),
+        # Kein Eintrag fuer MetaCategory.key: dient nur intern (Vorzeichen beim
+        # Transponieren, Tonart-Indikator im Frontend), landet nicht im PDF -
+        # siehe renderer.py TitleSection.
     }
 
 
@@ -150,7 +153,10 @@ class Style:
                 if name not in MetaCategory.__members__:
                     continue
                 category = MetaCategory[name]
-                kwargs = dict(meta_styles[category].__dict__)
+                # .get() statt [] : MetaCategory.key hat bewusst keinen Default-Eintrag
+                # (wird nie gedruckt, siehe default_meta_styles) - ein Style-Override dafuer
+                # in der XML waere wirkungslos, soll aber nicht crashen.
+                kwargs = dict(meta_styles.get(category, MetaStyle()).__dict__)
                 for attr_name, raw_value in category_el.attrib.items():
                     if attr_name in mstyle_types:
                         kwargs[attr_name] = _coerce(raw_value, mstyle_types[attr_name])

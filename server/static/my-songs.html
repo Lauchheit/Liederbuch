@@ -93,14 +93,7 @@ function renderMySongList() {
 
 async function previewSong(id, title) {
   try {
-    const res = await apiFetch("/api/render-book", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ song_ids: [id] }),
-    });
-    if (!res.ok) return;
-    const blob = await res.blob();
-    showPdfOverlay(blob, title);
+    await fetchAndShowPreview([id], title);
   } catch (e) {
     // 401 -> Auth-Overlay wurde schon gezeigt
   }

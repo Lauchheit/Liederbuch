@@ -72,7 +72,11 @@ class LaTeXRenderer:
             return f"{title_section}{body}"
 
         elif isinstance(node, transformer.TitleSection):
-            return "".join(self.render(info) for info in node.infos)
+            # Key dient nur intern (Vorzeichen beim Transponieren, Tonart-Indikator
+            # im Frontend) und soll nicht mit im gedruckten Titelblock stehen.
+            return "".join(
+                self.render(info) for info in node.infos if info.category != transformer.MetaCategory.key
+            )
 
         elif isinstance(node, transformer.MetaInfo):
             macro = transformer.meta_macro_name(node.category)

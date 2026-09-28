@@ -10,6 +10,8 @@
   --text-faint: #97a0a6;
   --danger: #b23b3b;
   --danger-soft: #fbebeb;
+  --warning: #b8860b;
+  --warning-soft: #fff6df;
   --success: #2f8f4e;
   --success-soft: #e7f6ec;
   --radius: 10px;
@@ -431,6 +433,7 @@ button, .btn-link {
 #render-book-btn:disabled { cursor: default; opacity: 0.45; }
 #book-status { font-size: 12px; color: var(--text-muted); padding: 0 16px 10px; }
 #book-status.error { color: var(--danger); }
+#book-status.warning { color: var(--warning); }
 
 /* ---------- Hilfe-Seite ---------- */
 #howto-page {
@@ -549,7 +552,50 @@ button, .btn-link {
   color: var(--text);
 }
 
-#preview-pane { flex: 1; height: 100%; position: relative; background: #eceff1; }
+#preview-pane { flex: 1; height: 100%; background: #eceff1; display: flex; flex-direction: column; }
+#preview-viewport { position: relative; flex: 1; min-height: 0; }
+#preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #1a1c1f;
+  flex-shrink: 0;
+}
+#preview-toolbar-label { color: #fff; font-size: 12px; margin-right: auto; }
+#preview-transpose { display: flex; align-items: center; gap: 2px; }
+#preview-transpose-down, #preview-transpose-up {
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.08);
+  border-radius: var(--radius-sm);
+  width: 26px;
+  height: 26px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+#preview-transpose-down:hover, #preview-transpose-up:hover { background: rgba(255,255,255,0.18); }
+#preview-transpose-value {
+  min-width: 28px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+#preview-transpose-key {
+  display: none;
+  margin-left: 6px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
 #preview { width: 100%; height: 100%; border: none; }
 #status {
   position: absolute;
@@ -564,6 +610,7 @@ button, .btn-link {
   display: none;
 }
 #status.error { background: var(--danger); }
+#status.warning { background: var(--warning); }
 #log {
   position: absolute;
   bottom: 0;
@@ -623,6 +670,52 @@ button, .btn-link {
   white-space: nowrap;
 }
 #pdf-overlay-download:hover, #pdf-overlay-close:hover { background: rgba(255,255,255,0.18); }
+.transpose-label { color: rgba(255,255,255,0.65); font-size: 12px; white-space: nowrap; margin-right: 4px; }
+#pdf-overlay-transpose {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+#pdf-overlay-transpose-down, #pdf-overlay-transpose-up {
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.08);
+  border-radius: var(--radius-sm);
+  width: 30px;
+  height: 30px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+#pdf-overlay-transpose-down:hover, #pdf-overlay-transpose-up:hover { background: rgba(255,255,255,0.18); }
+#pdf-overlay-transpose-value {
+  min-width: 32px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+#pdf-overlay-transpose-key {
+  display: none;
+  margin-left: 6px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.12);
+  color: var(--accent-soft, #fff);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+#pdf-overlay-warnings {
+  display: none;
+  padding: 6px 14px;
+  background: var(--warning-soft);
+  color: #6b5300;
+  font-size: 12px;
+  flex-shrink: 0;
+}
 #pdf-overlay-frame { flex: 1; border: none; background: #fff; }
 
 /* ---------- Responsive ---------- */
@@ -660,4 +753,5 @@ button, .btn-link {
 
   #pdf-overlay-bar { padding: 12px; }
   #pdf-overlay-download, #pdf-overlay-close { padding: 9px 14px; }
+  #pdf-overlay-transpose-down, #pdf-overlay-transpose-up { width: 34px; height: 34px; }
 }

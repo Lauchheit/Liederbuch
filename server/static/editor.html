@@ -22,9 +22,21 @@
       </div>
     </div>
     <div id="preview-pane">
-      <div id="status"></div>
-      <iframe id="preview"></iframe>
-      <div id="log"></div>
+      <div id="preview-toolbar">
+        <span id="preview-toolbar-label">Vorschau</span>
+        <div id="preview-transpose">
+          <span class="transpose-label">Transponieren</span>
+          <button id="preview-transpose-down" title="Halbton runter" type="button">−</button>
+          <span id="preview-transpose-value">±0</span>
+          <button id="preview-transpose-up" title="Halbton hoch" type="button">+</button>
+          <span id="preview-transpose-key"></span>
+        </div>
+      </div>
+      <div id="preview-viewport">
+        <div id="status"></div>
+        <iframe id="preview"></iframe>
+        <div id="log"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -40,6 +52,10 @@ const editorTitleEl = document.getElementById("editor-title");
 const saveBtn = document.getElementById("save-btn");
 const publishBtn = document.getElementById("publish-btn");
 const saveStatus = document.getElementById("save-status");
+const transposeValueEl = document.getElementById("preview-transpose-value");
+const transposeKeyEl = document.getElementById("preview-transpose-key");
+
+let transposeSemitones = 0;
 
 const DEFAULT_CONTENT = `---
 Title: Beispielsong
@@ -59,9 +75,9 @@ let currentTitle = null;
 let debounceTimer = null;
 let currentUrl = null;
 
-function setStatus(text, isError) {
+function setStatus(text, variant) {
   status.textContent = text;
-  status.className = isError ? "error" : "";
+  status.className = variant || "";
   status.style.display = text ? "block" : "none";
 }
 
@@ -113,19 +129,19 @@ async function renderPreview() {
   const content = editor.value;
   if (!currentSongId) localStorage.setItem(DRAFT_KEY, content);
   updateGutter();
-  setStatus("rendere...", false);
+  setStatus("rendere...", "");
   log.style.display = "none";
 
   try {
     const res = await apiFetch("/api/render", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({ content, transpose: transposeSemitones }),
     });
 
     if (!res.ok) {
       const err = await res.json();
-      setStatus(err.error || "Fehler", true);
+      setStatus(err.error || "Fehler", "error");
       setErrorLine(err.line || null);
       if (err.log) {
         log.textContent = err.log;
@@ -134,15 +150,23 @@ async function renderPreview() {
       return;
     }
 
+    const warningsHeader = res.headers.get("X-Chord-Warnings");
+    const keyHeader = res.headers.get("X-Transposed-Key");
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     preview.src = url;
     if (currentUrl) URL.revokeObjectURL(currentUrl);
     currentUrl = url;
-    setStatus("", false);
     setErrorLine(null);
+    transposeKeyEl.textContent = keyHeader ? `→ ${keyHeader}` : "";
+    transposeKeyEl.style.display = keyHeader ? "inline" : "none";
+    if (warningsHeader) {
+      setStatus(JSON.parse(warningsHeader).join(" | "), "warning");
+    } else {
+      setStatus("", "");
+    }
   } catch (e) {
-    if (e.message !== "unauthorized") setStatus("Netzwerkfehler: " + e, true);
+    if (e.message !== "unauthorized") setStatus("Netzwerkfehler: " + e, "error");
   }
 }
 
@@ -222,6 +246,15 @@ editor.addEventListener("input", () => {
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(renderPreview, 600);
 });
+
+function stepTranspose(delta) {
+  transposeSemitones += delta;
+  transposeValueEl.textContent = transposeSemitones > 0 ? `+${transposeSemitones}` : `${transposeSemitones}`;
+  clearTimeout(debounceTimer);
+  renderPreview();
+}
+document.getElementById("preview-transpose-down").addEventListener("click", () => stepTranspose(-1));
+document.getElementById("preview-transpose-up").addEventListener("click", () => stepTranspose(1));
 
 initAuth(() => {
   if (currentSongId) {

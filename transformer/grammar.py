@@ -10,10 +10,10 @@ page            :   (title_section ANY_BREAK)? paragraph (PARAGRAPH_BREAK paragr
 title_section       :   "---" ANY_BREAK meta_token (INDENT_LINEBREAK meta_token)* ANY_BREAK "---"
 meta_token      :   (meta_category ":" SPACE* TEXT_LINE)
 meta_category   :   META_CATEGORY_KEYWORD
-META_CATEGORY_KEYWORD  :   "Title" | "Artist" | "Subtitle" | "Instruction"
+META_CATEGORY_KEYWORD  :   "Title" | "Artist" | "Subtitle" | "Instruction" | "Key"
 
 paragraph       :   ((PARAGRAPH_TITLE LINEBREAK)? line? (LINEBREAK line)*) | PARAGRAPH_TITLE
-line            :   word (SPACE+ word)*
+line            :   word (SPACE+ word)* SPACE*
 word            :   TEXTTOKEN chord_run*
                 |   chord_run+
 

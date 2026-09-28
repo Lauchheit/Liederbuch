@@ -1,6 +1,7 @@
 from lark import Transformer, Token
 from dataclasses import dataclass
 from enum import Enum
+from transformer.chords import parse_chord
 # AST-Klassen
 @dataclass
 class Word:
@@ -29,6 +30,7 @@ class MetaCategory(Enum):
     artist=2
     subtitle=3
     instruction=4
+    key=5
 
 @dataclass
 class MetaInfo:
@@ -54,9 +56,23 @@ class Book:
 
 # Transformer: CST → AST
 class CordaTransformer(Transformer):
+    def __init__(self):
+        super().__init__()
+        # Nicht-blockierende Hinweise, z.B. Akkorde, die chords.parse_chord()
+        # nicht erkennt - der Song wird trotzdem normal weitergerendert.
+        self.warnings: list[str] = []
+
     def chord_run(self, items):
-        chord = str(items[0])[1:-1]  # Klammern "{" "}" entfernen
+        token = items[0]
+        chord = str(token)[1:-1]  # Klammern "{" "}" entfernen
         text = str(items[1]) if len(items) > 1 else ""
+        if chord.startswith("\\"):
+            # Escape: z.B. {\2x} fuer eine Wiederholungsangabe - wird wie ein
+            # normaler Akkord (ohne den Backslash) gerendert, aber nicht auf
+            # bekannte Akkordform geprueft.
+            chord = chord[1:]
+        elif chord and parse_chord(chord) is None:
+            self.warnings.append(f"Unbekannter Akkord in Zeile {token.line}: {{{chord}}}")
         return (chord, text)
 
     def word(self, items):

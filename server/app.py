@@ -19,7 +19,9 @@ from starlette.middleware.sessions import SessionMiddleware
 import transformer.grammar as grammar
 from transformer.renderer import LaTeXRenderer
 from transformer.style import Style
+from transformer.chords import transpose_key
 from transformer.transformer import Book, CordaTransformer, MetaCategory
+from transformer.transpose import page_key, transpose_book
 
 app = FastAPI()
 
@@ -167,11 +169,15 @@ def extract_meta(page) -> tuple[str | None, str | None, str | None]:
 
 
 def parse_song_content(content: str):
-    """Wirft bei ungueltiger Grammatik; gibt sonst (page_ast, title, artist, subtitle) zurueck."""
+    """Wirft bei ungueltiger Grammatik; gibt sonst (page_ast, title, artist, subtitle, warnings) zurueck.
+
+    warnings sind nicht-blockierende Hinweise (z.B. unbekannte Akkorde) - der
+    Song wird trotzdem normal weitergerendert."""
     cst = grammar.cst(content, start="page")
-    page = CordaTransformer().transform(cst)
+    song_transformer = CordaTransformer()
+    page = song_transformer.transform(cst)
     title, artist, subtitle = extract_meta(page)
-    return page, (title or "Unbenannt"), artist, subtitle
+    return page, (title or "Unbenannt"), artist, subtitle, song_transformer.warnings
 
 
 def parse_error_response(e: Exception) -> JSONResponse:
@@ -271,16 +277,39 @@ def me(user: dict = Depends(current_user)):
 
 class RenderRequest(BaseModel):
     content: str
+    transpose: int = 0  # Halbtoene, wird vor dem Rendern angewendet (0 = unveraendert)
+
+
+def set_key_headers(result: Response | JSONResponse, page, transpose: int) -> None:
+    """Setzt X-Song-Key/X-Transposed-Key, wenn die Page eine "Key:"-Angabe hat -
+    das Frontend zeigt damit an, in welche Tonart der aktuelle Transpose-Wert führt."""
+    if isinstance(result, JSONResponse):
+        return
+    key = page_key(page)
+    if not key:
+        return
+    result.headers["X-Song-Key"] = key
+    transposed = transpose_key(key, transpose) if transpose else key
+    if transposed:
+        result.headers["X-Transposed-Key"] = transposed
 
 
 @app.post("/api/render")
 def render(req: RenderRequest, user: dict = Depends(current_user)):
     try:
-        page, _, _, _ = parse_song_content(req.content)
+        page, _, _, _, warnings = parse_song_content(req.content)
     except Exception as e:
         return parse_error_response(e)
 
-    return compile_pdf(Book(pages=[page]))
+    book = Book(pages=[page])
+    if req.transpose:
+        book = transpose_book(book, req.transpose)
+
+    result = compile_pdf(book)
+    if not isinstance(result, JSONResponse) and warnings:
+        result.headers["X-Chord-Warnings"] = json.dumps(warnings)
+    set_key_headers(result, page, req.transpose)
+    return result
 
 
 # ---------- Eigene Songs (privat, mit Publish-Status) ----------
@@ -324,7 +353,7 @@ class SongContentRequest(BaseModel):
 @app.post("/api/my-songs")
 def create_song(req: SongContentRequest, user: dict = Depends(current_user)):
     try:
-        _, title, artist, subtitle = parse_song_content(req.content)
+        _, title, artist, subtitle, warnings = parse_song_content(req.content)
     except Exception as e:
         return parse_error_response(e)
 
@@ -336,13 +365,13 @@ def create_song(req: SongContentRequest, user: dict = Depends(current_user)):
             (user["id"], title, artist, subtitle, req.content, now, now),
         )
         song_id = cur.lastrowid
-    return {"id": song_id, "title": title, "artist": artist, "subtitle": subtitle, "published": False}
+    return {"id": song_id, "title": title, "artist": artist, "subtitle": subtitle, "published": False, "warnings": warnings}
 
 
 @app.put("/api/my-songs/{song_id}")
 def update_song(song_id: int, req: SongContentRequest, user: dict = Depends(current_user)):
     try:
-        _, title, artist, subtitle = parse_song_content(req.content)
+        _, title, artist, subtitle, warnings = parse_song_content(req.content)
     except Exception as e:
         return parse_error_response(e)
 
@@ -356,7 +385,7 @@ def update_song(song_id: int, req: SongContentRequest, user: dict = Depends(curr
             "UPDATE songs SET title = ?, artist = ?, subtitle = ?, content = ?, updated_at = ? WHERE id = ?",
             (title, artist, subtitle, req.content, datetime.now(timezone.utc).isoformat(), song_id),
         )
-    return {"id": song_id, "title": title, "artist": artist, "subtitle": subtitle}
+    return {"id": song_id, "title": title, "artist": artist, "subtitle": subtitle, "warnings": warnings}
 
 
 def set_published(song_id: int, user: dict, published: bool):
@@ -546,9 +575,10 @@ def fork_song(song_id: int, user: dict = Depends(current_user)):
 
 # ---------- Liederbuch-Rendering: aus oeffentlichen + eigenen Songs zusammengestellt ----------
 
-def render_song_ids(song_ids: list[int], user: dict) -> Response | JSONResponse:
+def render_song_ids(song_ids: list[int], user: dict, transpose: int = 0) -> Response | JSONResponse:
     pages = []
     skipped = []
+    warnings = []
     with db() as conn:
         for song_id in song_ids:
             row = conn.execute("SELECT * FROM songs WHERE id = ?", (song_id,)).fetchone()
@@ -558,7 +588,9 @@ def render_song_ids(song_ids: list[int], user: dict) -> Response | JSONResponse:
                 continue
             try:
                 cst = grammar.cst(row["content"], start="page")
-                pages.append(CordaTransformer().transform(cst))
+                song_transformer = CordaTransformer()
+                pages.append(song_transformer.transform(cst))
+                warnings.extend(f"{row['title']}: {w}" for w in song_transformer.warnings)
             except Exception:
                 traceback.print_exc()
                 skipped.append(song_id)
@@ -566,20 +598,31 @@ def render_song_ids(song_ids: list[int], user: dict) -> Response | JSONResponse:
     if not pages:
         return JSONResponse(status_code=400, content={"error": "Keine der ausgewaehlten Songs konnte gerendert werden."})
 
+    book = Book(pages=pages)
+    if transpose:
+        book = transpose_book(book, transpose)
+
     # passes=2 fuer korrekte Seitenzahlen im Inhaltsverzeichnis (siehe compile_pdf)
-    result = compile_pdf(Book(pages=pages), timeout=120, passes=2)
-    if not isinstance(result, JSONResponse) and skipped:
-        result.headers["X-Skipped-Songs"] = json.dumps(skipped)
+    result = compile_pdf(book, timeout=120, passes=2)
+    if not isinstance(result, JSONResponse):
+        if skipped:
+            result.headers["X-Skipped-Songs"] = json.dumps(skipped)
+        if warnings:
+            result.headers["X-Chord-Warnings"] = json.dumps(warnings)
+        # Tonart-Indikator ergibt nur bei genau einem Song einen eindeutigen Sinn.
+        if len(pages) == 1:
+            set_key_headers(result, pages[0], transpose)
     return result
 
 
 class RenderBookRequest(BaseModel):
     song_ids: list[int]  # Reihenfolge = Reihenfolge im Buch, Ad-hoc (nicht persistiert)
+    transpose: int = 0  # Halbtoene, wird vor dem Rendern angewendet (0 = unveraendert)
 
 
 @app.post("/api/render-book")
 def render_book(req: RenderBookRequest, user: dict = Depends(current_user)):
-    return render_song_ids(req.song_ids, user)
+    return render_song_ids(req.song_ids, user, req.transpose)
 
 
 # ---------- Liederbuecher (persistiert, mehrere pro User, eigener Name) ----------
@@ -682,7 +725,7 @@ def delete_book(book_id: int, user: dict = Depends(current_user)):
 
 
 @app.post("/api/books/{book_id}/render")
-def render_book_by_id(book_id: int, user: dict = Depends(current_user)):
+def render_book_by_id(book_id: int, transpose: int = 0, user: dict = Depends(current_user)):
     with db() as conn:
         row = conn.execute(
             "SELECT * FROM books WHERE id = ? AND owner_id = ?", (book_id, user["id"])
@@ -690,7 +733,7 @@ def render_book_by_id(book_id: int, user: dict = Depends(current_user)):
         if not row:
             return JSONResponse(status_code=404, content={"error": "nicht gefunden"})
         song_ids = json.loads(row["song_ids"])
-    return render_song_ids(song_ids, user)
+    return render_song_ids(song_ids, user, transpose)
 
 
 app.mount("/", StaticFiles(directory="server/static", html=True), name="static")
